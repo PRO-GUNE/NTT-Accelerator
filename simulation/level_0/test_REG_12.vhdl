@@ -37,10 +37,8 @@ begin
     -- Clock process
     process
     begin
-        while true loop
-            clk <= not clk;
-            wait for 5 ns;
-        end loop;
+        clk <= not clk;
+        wait for 5 ns;
     end process;
 
     -- Test cases
