@@ -45,6 +45,17 @@ Polynomial multiplication is a fundamental operation in many applications, inclu
 # 4. Implementation
 The implementation will be done using the VHDL code and the Vivado Design Suite. The RTL will then be synthesized to a bitstream using Vivado Design Suite. The bitstream will then be tested on an FPGA. The FPGA used will be the Nexys A7 Board. The results will be analyzed and compared with the results in the paper.
 
+# 4.1 Hardware Architecture
+Based on the paper [BAM24], the hardware architecture will be implemented. The architecture consists of the following components:
+1. Reconfigurable Butterfly Unit including optimized modular reduction.
+2. A 2x2 Butterfly Core
+3. A NTT RAM to read and write coefficients
+4. A twiddle factor ROM to store precomputed twiddle factors
+
+The architecture is shown in the following diagram:
+
+![alt text](schematic/schematic.jpg)
+
 # 5. Results
 The results will be analyzed and compared with the results in the paper. The results will be presented in the form of a report.
 
