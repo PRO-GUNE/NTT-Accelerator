@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity test_MOD_ADD is
 end entity test_MOD_ADD;
 
-architecture Behavioral of test_MOD_ADD is
+architecture testbench of test_MOD_ADD is
     component MOD_ADD is
         port (
             a : in std_logic_vector(11 downto 0);
@@ -58,4 +58,4 @@ begin
     wait;
     end process;
 
-end architecture Behavioral;
+end architecture testbench;

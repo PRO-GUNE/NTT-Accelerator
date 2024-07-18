@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity test_MUX_3 is
 end entity test_MUX_3;
 
-architecture Behavioral of test_MUX_3 is
+architecture testbench of test_MUX_3 is
     -- Component declaration
     component MUX_3 is
         port (
@@ -74,4 +74,4 @@ begin
     wait;
     end process;
 
-end architecture Behavioral;
+end architecture testbench;

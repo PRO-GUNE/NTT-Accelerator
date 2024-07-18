@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity test_MUL is
 end entity test_MUL;
 
-architecture Behavioral of test_MUL is
+architecture testbench of test_MUL is
     component MUL is
         port (
             a : in  unsigned(11 downto 0);
@@ -62,4 +62,4 @@ begin
     wait;
     end process;
 
-end architecture Behavioral;
+end architecture testbench;

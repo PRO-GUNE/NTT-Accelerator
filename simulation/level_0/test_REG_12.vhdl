@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity test_REG_12 is
 end entity test_REG_12;
 
-architecture test_behavioral of test_REG_12 is
+architecture testbench of test_REG_12 is
     -- Component declaration
     component REG_12
         port (
@@ -74,4 +74,4 @@ begin
         wait;
     end process;
 
-end architecture test_behavioral;
+end architecture testbench;
