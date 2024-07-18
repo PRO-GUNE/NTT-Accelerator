@@ -45,7 +45,7 @@ Polynomial multiplication is a fundamental operation in many applications, inclu
 # 4. Implementation
 The implementation will be done using the VHDL code and the Vivado Design Suite. The RTL will then be synthesized to a bitstream using Vivado Design Suite. The bitstream will then be tested on an FPGA. The FPGA used will be the Nexys A7 Board. The results will be analyzed and compared with the results in the paper.
 
-# 4.1 Hardware Architecture
+## 4.1 Hardware Architecture
 Based on the paper [BAM24], the hardware architecture will be implemented. The architecture consists of the following components:
 1. Reconfigurable Butterfly Unit including optimized modular reduction.
 2. A 2x2 Butterfly Core
@@ -54,7 +54,38 @@ Based on the paper [BAM24], the hardware architecture will be implemented. The a
 
 The architecture is shown in the following diagram:
 
+
 ![alt text](schematic/schematic.jpg)
+
+## 4.2 Hardware Components
+
+### 4.2.1 Reconfigurable Butterfly Unit
+
+The reconfigurable butterfly unit is a key component in the NTT architecture. The butterfly unit is created in accordance with the schematic shown. Both addition and substraction performed are modulo $p$. The multiplication performed is regualar arithematic multiplication and not modulo $p$. The modular reduction is performed after the multiplication.
+
+*Note: It must be checked if we can assume that the coefficients are small compared to $p$. If so, we can replace modular addition and modular subtraction with regular addition and subtraction.*
+
+The 2x2 butterfly core setup is used to merge 2 layers of the NTT/INTT and perform two butterfly operations in each layer. Refer the diagram below
+
+![alt text](schematic/stages.jpg)
+
+### 4.2.2 NTT RAM
+
+The NTT RAM is used to store the coefficients of the polynomial. The NTT RAM is used to read and write the coefficients. The NTT RAM is implemented using the BRAM in the FPGA. It has $n/4$ addresses and each address stores 4 coefficients. Each coefficient is 12 bits long. In each cycle four coefficients are read or written and their outputs are buffered in four serial-in, parallel-out shift registers with different lengths. The results are written back to the NTT RAM sequentially. The following data flow diagram shows the operation of the NTT RAM.
+
+![alt text](schematic/dataflow.jpg)
+
+The address and data flow of NTT RAM for read and write operation in every clock cycle are given in the above image for n = 128. After 4 cycles, the first buffer is full, and 4 coefficients can be stored in the RAM. The same scenario is performed after one cycle for the second and then for the third and fourth buffer, and its first 4-coefficients will be stored. Each round of NTT includes $n/4$ reading and storing while there are fully pipelined to increase throughput. The pipeline latency between read and write sequences consists of 2 cycles for reading from RAM, 8 cycles for two butterfly operations, and 4 cycles for buffering the results in registers. Furthermore, to avoid any memory conflict, we consider 6 idle cycles between each round.
+
+### 4.2.3 Twiddle Factor ROM
+
+The twiddle factor ROM is used to store the precomputed twiddle factors. The twiddle factor ROM is implemented using the LUTs in the FPGA. The twiddle factor ROM is used to store the twiddle factors for the NTT. The twiddle factors are precomputed and stored in the ROM. Based on the symmetry property of twiddle factors in NTT and INTT, i.e., $\omega_n^i$ and $\omega_n^{-i}$ respectively, we have $\omega_n^i = \omega_n^{-i}$
+
+## 4.3 Software Components
+
+The software components will include the following:
+1. A testbench to test the hardware implementation.
+2. A driver to interface with the FPGA.
 
 # 5. Results
 The results will be analyzed and compared with the results in the paper. The results will be presented in the form of a report.
