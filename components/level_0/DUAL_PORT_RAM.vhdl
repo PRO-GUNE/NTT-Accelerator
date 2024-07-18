@@ -15,7 +15,7 @@ entity DUAL_PORT_RAM is
         addr2     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
         write_en  : in  std_logic;
         data_in   : in  std_logic_vector(DATA_SIZE-1 downto 0);
-        data_out1 : out std_logic_vector(DATA_SIZE-1 downto 0);
+        data_out : out std_logic_vector(DATA_SIZE-1 downto 0);
     );
 end DUAL_PORT_RAM;
 
@@ -36,7 +36,7 @@ begin
     begin
         if rising_edge(clk) then
             if en_2 = '1' then
-                data_out1 <= RAM(conv_integer(addr2));
+                data_out <= RAM(conv_integer(addr2));
             end if;
         end if;
     end process;
