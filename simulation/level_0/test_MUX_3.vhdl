@@ -17,57 +17,57 @@ architecture testbench of test_MUX_3 is
     end component MUX_3;
 
     -- Signal declarations
-    signal sel_signal : std_logic_vector(1 downto 0);
-    signal in0_signal : std_logic_vector(11 downto 0);
-    signal in1_signal : std_logic_vector(11 downto 0);
-    signal in2_signal : std_logic_vector(11 downto 0);
-    signal c_out_signal : std_logic_vector(11 downto 0);
+    signal sel : std_logic_vector(1 downto 0);
+    signal in0 : std_logic_vector(11 downto 0);
+    signal in1 : std_logic_vector(11 downto 0);
+    signal in2 : std_logic_vector(11 downto 0);
+    signal c_out : std_logic_vector(11 downto 0);
 
 begin
     -- Instantiate the MUX_3 component
     UUT: MUX_3 port map (
-        sel => sel_signal,
-        in0 => in0_signal,
-        in1 => in1_signal,
-        in2 => in2_signal,
-        c_out => c_out_signal
+        sel => sel,
+        in0 => in0,
+        in1 => in1,
+        in2 => in2,
+        c_out => c_out
     );
 
     process begin
 
     -- Test case 1
-    -- Expected output: c_out_signal = "000000000000"
-    sel_signal <= "00";
-    in0_signal <= "000000000000";
-    in1_signal <= "111111111111";
-    in2_signal <= "101010101010";
+    -- Expected output: c_out = "000000000000"
+    sel <= "00";
+    in0 <= "000000000000";
+    in1 <= "111111111111";
+    in2 <= "101010101010";
     wait for 10 ns;
     assert c_out = "000000000000" report "Test case 1 failed" severity error;
 
     -- Test case 2
-    -- Expected output: c_out_signal = "111111111111"
-    sel_signal <= "01";
-    in0_signal <= "000000000000";
-    in1_signal <= "111111111111";
-    in2_signal <= "101010101010";
+    -- Expected output: c_out = "111111111111"
+    sel <= "01";
+    in0 <= "000000000000";
+    in1 <= "111111111111";
+    in2 <= "101010101010";
     wait for 10 ns;
     assert c_out = "111111111111" report "Test case 2 failed" severity error;
     
     -- Test case 3
-    -- Expected output: c_out_signal = "101010101010"
-    sel_signal <= "10";
-    in0_signal <= "000000000000";
-    in1_signal <= "111111111111";
-    in2_signal <= "101010101010";
+    -- Expected output: c_out = "101010101010"
+    sel <= "10";
+    in0 <= "000000000000";
+    in1 <= "111111111111";
+    in2 <= "101010101010";
     wait for 10 ns;
     assert c_out = "101010101010" report "Test case 3 failed" severity error;
 
     -- Test case 4
-    -- Expected output: c_out_signal = "000000000000"
-    sel_signal <= "11";
-    in0_signal <= "000000000000";
-    in1_signal <= "111111111111";
-    in2_signal <= "101010101010";
+    -- Expected output: c_out = "000000000000"
+    sel <= "11";
+    in0 <= "000000000000";
+    in1 <= "111111111111";
+    in2 <= "101010101010";
     wait for 10 ns;
     assert c_out = "000000000000" report "Test case 3 failed" severity error;
 

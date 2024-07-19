@@ -24,19 +24,24 @@ begin
 
     process begin
     -- Test 1: All zeros
-    c_in <= (others => '0');
+    c_in <= "000000000000000000000000";
     wait for 10 ns;
     assert c_out = "000000000000" report "Test 1 failed" severity error;
 
-    -- Test 2: All ones
-    c_in <= (others => '1');
+    -- Test 2: Random values
+    c_in <= "101010101010101010101010";
     wait for 10 ns;
-    assert c_out = "111111111111" report "Test 2 failed" severity error;
+    assert c_out = "101010001011" report "Test 2 failed" severity error;
 
     -- Test 3: Random values
     c_in <= "110011001100110011001100";
     wait for 10 ns;
-    assert c_out = "010101010101" report "Test 3 failed" severity error;
+    assert c_out = "101000001101" report "Test 3 failed" severity error;
+
+    -- Test 4: Random values
+    c_in <= "101010010000000000000000";
+    wait for 10 ns;
+    assert c_out = "000000000001" report "Test 4 failed" severity error;
     
     -- End simulation
     wait;

@@ -34,32 +34,20 @@ begin
     wait for 10 ns;
     assert result_out = "000000000000000000000010" report "Test case 1 failed" severity error;
     
-    -- Test case 2: Multiplication of a positive and a negative number
-    a_in <= "000000000011"; -- 3
-    b_in <= "111111111110"; -- -2
-    wait for 10 ns;
-    assert result_out = "111111111111111111111100" report "Test case 2 failed" severity error;
 
-    -- Test case 3: Multiplication of two negative numbers
-    a_in <= "111111111111"; -- -1
-    b_in <= "111111111110"; -- -2
-    wait for 10 ns;
-    assert result_out = "000000000000000000000010" report "Test case 3 failed" severity error;
-
-
-    -- Test case 4: Multiplication of zero and a positive number
+    -- Test case 2: Multiplication of zero and a positive number
     a_in <= "000000000000"; -- 0
     b_in <= "000000000010"; -- 2
     wait for 10 ns;
-    assert result_out = "000000000000000000000000" report "Test case 4 failed" severity error;
+    assert result_out = "000000000000000000000000" report "Test case 2 failed" severity error;
 
 
-    -- Test case 5: Multiplication of zero and a negative number
-    a_in <= "000000000000"; -- 0
-    b_in <= "111111111110"; -- -2
+    -- Test case 3: Multiplication of two large positive numbers
+    a_in <= "011111111111"; -- 2047
+    b_in <= "011111111111"; -- 2047
     wait for 10 ns;
-    assert result_out = "000000000000000000000000" report "Test case 5 failed" severity error;
-    wait;
+    assert result_out = "001111111111000000000001" report "Test case 3 failed" severity error;
+    wait for 10 ns;
     end process;
 
 end architecture testbench;

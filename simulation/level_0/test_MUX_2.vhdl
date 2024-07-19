@@ -61,7 +61,7 @@ begin
     in1 <= "000000000000";
     wait for 10 ns;
     assert c_out = "111111111111" report "Test case 4 failed" severity error;
-    wait;
+    wait for 10 ns;
 
     end process;
 

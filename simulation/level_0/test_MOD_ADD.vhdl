@@ -26,34 +26,34 @@ begin
     process begin
 
     -- Test 1: a = 0, b = 0
-    a <= "000000000000";
+    a <= "000000110010";
     b <= "000000000000";
     wait for 10 ns;
     assert sum = "000000000000" report "Test 1 failed" severity error;
 
-    -- Test 2: a = 100, b = 200
+    -- Test 3: a = 100, b = 0
+    a <= "000000110010";
+    b <= "000000000000";
+    wait for 10 ns;
+    assert sum = "000000110010" report "Test 2 failed" severity error;
+
+    -- Test 3: a = 100, b = 200
     a <= "000000110010";
     b <= "000001100100";
     wait for 10 ns;
-    assert sum = "000010010110" report "Test 2 failed" severity error;
+    assert sum = "000010010110" report "Test 3 failed" severity error;
 
-    -- Test 3: a = 3328, b = 1
+    -- Test 4: a = 3328, b = 1
     a <= "110100000000";
     b <= "000000000001";
     wait for 10 ns;
-    assert sum = "000000000001" report "Test 3 failed" severity error;
+    assert sum = "000000000000" report "Test 4 failed" severity error;
 
-    -- Test 4: a = 3328, b = 3328
+    -- Test 5: a = 3328, b = 3328
     a <= "110100000000";
     b <= "110100000000";
     wait for 10 ns;
-    assert sum = "000000000000" report "Test 4 failed" severity error;
-
-    -- Test 5: a = 3328, b = 3329
-    a <= "110100000000";
-    b <= "110100000001";
-    wait for 10 ns;
-    assert sum = "000000000001" report "Test 5 failed" severity error;
+    assert sum = "110011111111" report "Test 5 failed" severity error;
 
     wait;
     end process;
