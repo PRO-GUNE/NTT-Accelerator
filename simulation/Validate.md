@@ -18,7 +18,7 @@ This file includes the validation simulation tests run, to be run and any bugs t
 
 
 # Level 1 Components
-- [] BUFFER_4
+- [x] BUFFER_4
 - [] BUTTERFLY_UNIT
 
 ## Bug Reports

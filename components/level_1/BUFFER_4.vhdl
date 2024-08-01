@@ -5,10 +5,11 @@ use ieee.std_logic_1164.all;
 -- Entity declaration
 entity BUFFER_4 is
     port (
-        input_data : in std_logic_vector(11 downto 0);
-        output_data : out std_logic_vector(11 downto 0);
+        clk : in std_logic;
+        reset : in std_logic;
         enable : in std_logic;
-        clk : in std_logic
+        data_in : in std_logic_vector(11 downto 0);
+        data_out : out std_logic_vector(11 downto 0)
     );
 end entity BUFFER_4;
 
@@ -17,10 +18,11 @@ architecture behavioral of BUFFER_4 is
     -- Declare four instances of REG_12 component
     component REG_12 is
         port (
-            input_data : in std_logic_vector(11 downto 0);
-            output_data : out std_logic_vector(11 downto 0);
+            clk : in std_logic;
+            reset : in std_logic;
             enable : in std_logic;
-            clk : in std_logic
+            data_in : in std_logic_vector(11 downto 0);
+            data_out : out std_logic_vector(11 downto 0)
         );
     end component REG_12;
 
@@ -30,32 +32,36 @@ begin
     -- Instantiate the four registers
     reg1 : REG_12
         port map (
-            input_data => input_data,
-            output_data => reg1_out,
+            data_in => data_in,
+            data_out => reg1_out,
+            reset => reset,
             enable => enable,
             clk => clk
         );
 
     reg2 : REG_12
         port map (
-            input_data => reg1_out,
-            output_data => reg2_out,
+            data_in => reg1_out,
+            data_out => reg2_out,
+            reset => reset,
             enable => enable,
             clk => clk
         );
 
     reg3 : REG_12
         port map (
-            input_data => reg2_out,
-            output_data => reg3_out,
+            data_in => reg2_out,
+            data_out => reg3_out,
+            reset => reset,
             enable => enable,
             clk => clk
         );
 
     reg4 : REG_12
         port map (
-            input_data => reg3_out,
-            output_data => output_data,
+            data_in => reg3_out,
+            data_out => data_out,
+            reset => reset,
             enable => enable,
             clk => clk
         );
