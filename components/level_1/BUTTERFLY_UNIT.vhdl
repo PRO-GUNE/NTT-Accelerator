@@ -37,7 +37,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
     end component MUX_3;
 
     -- register 12 bits
-    component REG
+    component REG_12
         port (
             clk : in std_logic;
             reset : in std_logic;
@@ -45,7 +45,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_in : in std_logic_vector(11 downto 0);
             data_out : out std_logic_vector(11 downto 0)
         );
-    end component REG;
+    end component REG_12;
 
     -- modular addition
     component MOD_ADD

@@ -15,7 +15,7 @@ entity NTT_RAM is
         data_in0   : in  std_logic_vector(DATA_SIZE-1 downto 0);
         data_in1 : in std_logic_vector(DATA_SIZE-1 downto 0);
         data_in_mode : in std_logic;
-        data_out : out std_logic_vector(DATA_SIZE-1 downto 0);
+        data_out : out std_logic_vector(DATA_SIZE-1 downto 0)
     );
 end NTT_RAM;
 
@@ -29,13 +29,11 @@ architecture behavioral of NTT_RAM is
         );
         port (
             clk       : in  std_logic;
-            en_1      : in  std_logic;
-            en_2      : in  std_logic;
             addr1     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
             addr2     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
             write_en  : in  std_logic;
             data_in   : in  std_logic_vector(DATA_SIZE-1 downto 0);
-            data_out : out std_logic_vector(DATA_SIZE-1 downto 0);
+            data_out : out std_logic_vector(DATA_SIZE-1 downto 0)
         );
     end component RAM;
 
@@ -76,8 +74,6 @@ begin
         )
         port map (
             clk => clk,
-            en_1 => '1',
-            en_2 => '1',
             addr1 => addr1,
             addr2 => addr2,
             write_en => write_en,

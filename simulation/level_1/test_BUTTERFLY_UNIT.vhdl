@@ -1,10 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity TEST_BUTTERFLY_UNIT is
-end entity TEST_BUTTERFLY_UNIT;
+entity test_BUTTERFLY_UNIT is
+end entity test_BUTTERFLY_UNIT;
 
-architecture Behavioral of TEST_BUTTERFLY_UNIT is
+architecture testbench of test_BUTTERFLY_UNIT is
 
     -- Import the entity and architecture of the BUTTERFLY_UNIT module
     component BUTTERFLY_UNIT
@@ -78,4 +78,4 @@ begin
 
     end process;
 
-end architecture Behavioral;
+end architecture testbench;

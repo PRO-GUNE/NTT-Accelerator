@@ -2,10 +2,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity TEST_BUTTERFLY_UNIT is
-end entity TEST_BUTTERFLY_UNIT;
+entity test_BUFFER_4 is
+end entity test_BUFFER_4;
     
-architecture Behavioral of TEST_BUTTERFLY_UNIT is
+architecture testbench of test_BUFFER_4 is
 
     component BUFFER_4
         port (
@@ -73,3 +73,5 @@ begin
         wait;
 
     end process;
+
+end testbench;
