@@ -31,12 +31,12 @@ begin
     -- Test 2: Random values
     c_in <= "001010101010101010101010";
     wait for 100 ns;
-    assert c_out = "101110111011" report "Test 2 failed" severity error;
+    assert c_out = "110010111011" report "Test 2 failed" severity error;
 
     -- Test 3: Random values
     c_in <= "000011001100110011001100";
     wait for 100 ns;
-    assert c_out = "011001010011" report "Test 3 failed" severity error;
+    assert c_out = "011101010011" report "Test 3 failed" severity error;
     
     -- End simulation
     wait;

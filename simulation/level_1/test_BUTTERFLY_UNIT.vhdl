@@ -51,12 +51,12 @@ begin
     begin
         -- Test 1: All inputs and outputs set to '0'
         mode <= '0';
-        u_in <= (others => '0');
-        v_in <= (others => '0');
-        twiddle <= (others => '0');
+        u_in <= "000000000000";
+        v_in <= "000000000000";
+        twiddle <= "000000000000";
         wait for 10 ns;
-        assert u_out = (others => '0') report "Test 1 failed for u_out" severity error;
-        assert v_out = (others => '0') report "Test 1 failed for v_out" severity error;
+        assert u_out = "000000000000" report "Test 1 failed for u_out" severity error;
+        assert v_out = "000000000000" report "Test 1 failed for v_out" severity error;
 
         -- Test 2: Random inputs
         mode <= '1';
@@ -69,7 +69,7 @@ begin
 
         -- Test 3: All inputs set to '1'
         mode <= '1';
-        u_in <= (others => '1');
+        u_in <= "111111111111";
         v_in <= (others => '1');
         twiddle <= (others => '1');
         wait for 10 ns;

@@ -15,7 +15,7 @@ architecture behavioral of MOD_K2_RED is
 begin
     process(c_in)
         variable c_l: unsigned(15 downto 0);
-        variable c_l1, c_h1: unsigned(11 downto 0); 
+        variable c_l1, c_h1: signed(11 downto 0); 
         variable c_h : unsigned(23 downto 8);
         variable c1 : signed(15 downto 0);
         variable c2 : unsigned(11 downto 0);
@@ -27,8 +27,13 @@ begin
         c1 := to_signed(c1_val, 16);
         c1_test <= c1;
         
-        c_l1 := unsigned("0000" & c1(7 downto 0));
-        c_h1 := unsigned("0000" & c1(15 downto 8));
+        if (c1(c1'left) = '1') then
+            c_h1 := signed("1111" & c1(15 downto 8));
+        else
+            c_h1 := signed("0000" & c1(15 downto 8));    
+        end if ;
+        
+        c_l1 := signed("0000" & c1(7 downto 0));
         c2_val := to_integer((shift_left(c_l1, 3) - c_h1) + (shift_left(c_l1, 2) + c_l1));
         c2 := to_unsigned(c2_val, 12);
         c2_test <= c2;

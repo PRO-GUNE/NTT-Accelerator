@@ -8,14 +8,14 @@ end entity test_MUL;
 architecture testbench of test_MUL is
     component MUL is
         port (
-            a : in  unsigned(11 downto 0);
-            b : in  unsigned(11 downto 0);
-            result : out unsigned(23 downto 0)
+            a : in std_logic_vector(11 downto 0);
+            b : in std_logic_vector(11 downto 0);
+            result : out std_logic_vector(23 downto 0)
         );
     end component MUL;
 
-    signal a_in, b_in : unsigned(11 downto 0);
-    signal result_out : unsigned(23 downto 0);
+    signal a_in, b_in : std_logic_vector(11 downto 0);
+    signal result_out : std_logic_vector(23 downto 0);
 
 begin
     UUT: MUL

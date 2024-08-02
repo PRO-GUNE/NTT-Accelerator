@@ -13,6 +13,8 @@ architecture testbench of test_DUAL_PORT_RAM is
         );
         port (
             clk : in std_logic;
+            en1 : in std_logic;
+            en2 : in std_logic;
             addr1 : in std_logic_vector(ADDR_SIZE-1 downto 0);
             addr2 : in std_logic_vector(ADDR_SIZE-1 downto 0);
             write_en : in std_logic;
@@ -34,6 +36,8 @@ begin
     UUT : DUAL_PORT_RAM
         port map (
             clk => clk,
+            en1 => '1',
+            en2 => '1',
             addr1 => addr1,
             addr2 => addr2,
             write_en => write_en,
@@ -79,7 +83,19 @@ begin
         data_in <= "111100001111000011110000111100001111000011110001";
         wait for 100 ns;
         assert data_out = "111100001111000011110000111100001111000011110000" report "Test 4 failed: Data read from RAM does not match the expected data.";
+        
+        -- Test 5: Simultaneous read and write operations
+        addr2 <= "000001";
+        wait for 100 ns;
+        assert data_out = "111100001111000011110000111100001111000011110001" report "Test 5 failed: Simultaneous read and write operations are not working as expected.";
 
+        -- Test 6: Writing and reading data with same address
+        addr1 <= "000001";
+        write_en <= '1';
+        data_in <= "111100001111000011110000111100001111000011110000";
+        wait for 100 ns;
+        assert data_out = "111100001111000011110000111100001111000011110000" report "Test 6 failed: Data read from RAM does not match the expected data.";
+    
         wait;
 
     end process;

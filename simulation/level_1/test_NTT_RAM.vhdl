@@ -6,7 +6,7 @@ end test_NTT_RAM;
 
 architecture testbench of test_NTT_RAM is
     -- Constants
-    constant ADDR_SIZE : integer := 32;
+    constant ADDR_SIZE : integer := 6;
     constant DATA_SIZE : integer := 48;
     
     -- Signals
@@ -22,7 +22,7 @@ architecture testbench of test_NTT_RAM is
     -- Component instantiation
     component NTT_RAM is
         generic (
-            ADDR_SIZE : integer := 32;
+            ADDR_SIZE : integer := 6;
             DATA_SIZE : integer := 48
         );
         port (
@@ -66,8 +66,8 @@ begin
     stimulus_process : process
     begin
         -- Test case 1
-        addr1 <= "00000000000000000000000000000000";
-        addr2 <= "00000000000000000000000000000000";
+        addr1 <= "000000";
+        addr2 <= "000000";
         write_en <= '1';
         data_in0 <= "111111111111111111111111111111111111111111111111";
         data_in1 <= "000000000000000000000000000000000000000000000000";
@@ -76,9 +76,9 @@ begin
         assert data_out = data_in0 report "Test 1 failed: Data read from RAM does not match the written data.";
         
         -- Test case 2
-        addr1 <= "00000000000000000000000000000001";
-        addr2 <= "00000000000000000000000000000001";
-        write_en <= '0';
+        addr1 <= "000001";
+        addr2 <= "000001";
+        write_en <= '1';
         data_in0 <= "000000000000000000000000000000000000000000000000";
         data_in1 <= "111111111111111111111111111111111111111111111111";
         data_in_mode <= '1';

@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 -- Entity declaration
 entity NTT_RAM is
     generic (
-        ADDR_SIZE : integer := 32;
+        ADDR_SIZE : integer := 6;
         DATA_SIZE : integer := 48
     );
     port (
@@ -21,21 +21,23 @@ end NTT_RAM;
 
 -- Architecture definition
 architecture behavioral of NTT_RAM is
-    -- Declare two instances of RAM component
-    component RAM is
+    -- Declare two instances of DUAL_PORT_RAM component
+    component DUAL_PORT_RAM is
         generic (
-            ADDR_SIZE : integer := 32;
+            ADDR_SIZE : integer := 6;
             DATA_SIZE : integer := 48
         );
         port (
             clk       : in  std_logic;
+            en1       : in std_logic;
+            en2       : in std_logic;
             addr1     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
             addr2     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
             write_en  : in  std_logic;
             data_in   : in  std_logic_vector(DATA_SIZE-1 downto 0);
             data_out : out std_logic_vector(DATA_SIZE-1 downto 0)
         );
-    end component RAM;
+    end component DUAL_PORT_RAM;
 
     component MUX_2_RAM is
         generic (
@@ -67,13 +69,15 @@ begin
         );
 
     -- Instantiate the two RAMs
-    ram : RAM
+    ram_coeff : DUAL_PORT_RAM
         generic map (
             ADDR_SIZE => ADDR_SIZE,
             DATA_SIZE => DATA_SIZE
         )
         port map (
             clk => clk,
+            en1 => '1',
+            en2 => '1',
             addr1 => addr1,
             addr2 => addr2,
             write_en => write_en,
