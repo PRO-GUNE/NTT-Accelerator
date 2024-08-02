@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity BUTTERFLY_UNIT is
     port (
         clk : in std_logic;
-        mode : in std_logic; 
+        mode : in std_logic_vector(1 downto 0); 
         u_in : in std_logic_vector(11 downto 0);
         v_in : in std_logic_vector(11 downto 0);
         twiddle : in std_logic_vector(11 downto 0);
@@ -29,7 +29,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
     -- 3 way multiplexer
     component MUX_3
         port (
-            sel : in std_logic;
+            sel : in std_logic_vector(1 downto 0);
             in0 : in std_logic_vector(11 downto 0);
             in1 : in std_logic_vector(11 downto 0);
             in2 : in std_logic_vector(11 downto 0);
@@ -62,7 +62,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
         port (
                 a : in std_logic_vector(11 downto 0);
                 b : in std_logic_vector(11 downto 0);
-                sum : out std_logic_vector(11 downto 0)
+                diff : out std_logic_vector(11 downto 0)
             );
     end component MOD_SUB;
 
@@ -174,7 +174,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
 
         -- mux twiddle
         mux_2_twiddle: MUX_2 port map (
-            sel => mode,
+            sel => mode(0),
             in0 => twiddle,
             in1 => reg_twiddle_out,
             c_out => mux_twiddle_out
@@ -182,7 +182,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
 
         -- mux u1
         mux_2_u1: MUX_2 port map (
-            sel => mode,
+            sel => mode(0),
             in0 => reg_u3_out,
             in1 => u_in,
             c_out => mux_u1_out
@@ -190,7 +190,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
 
         -- mux v1
         mux_2_v1: MUX_2 port map (
-            sel => mode,
+            sel => mode(0),
             in0 => mux_vu1_out,
             in1 => v_in,
             c_out => mux_v1_out
@@ -198,7 +198,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
 
         -- mux vk2red
         mux_2_vk2red: MUX_2 port map (
-            sel => mode,
+            sel => mode(0),
             in0 => mod_k2_red_out,
             in1 => reg_v3_out,
             c_out => mux_vk2red_out
@@ -206,7 +206,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
 
         -- mux vu1
         mux_2_vu1: MUX_2 port map (
-            sel => mode,
+            sel => mode(0),
             in0 => reg_u3_out,
             in1 => v_in,
             c_out => mux_vu1_out
@@ -216,7 +216,7 @@ architecture Behavioral of BUTTERFLY_UNIT is
         mod_sub_unit: MOD_SUB port map (
             a => mux_u1_out,
             b => mux_v1_out,
-            sum => mod_sub_out
+            diff => mod_sub_out
         );
         
         -- multiplication

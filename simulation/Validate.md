@@ -12,6 +12,7 @@ This file includes the validation simulation tests run, to be run and any bugs t
 - [x] MUX_3
 - [x] MUX_4
 - [x] REG_12
+- [] Twiddle_ROM
 
 ## Bug Reports
 - [x] Invalid signal "X" in the register 12 module (Resolved: Multiple processes in the test bench assigning conflicting values to the data_in at the same time)
