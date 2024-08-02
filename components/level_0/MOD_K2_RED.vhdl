@@ -21,19 +21,14 @@ begin
         variable c2 : unsigned(11 downto 0);
         variable c1_val, c2_val : integer := 0;
     begin        
-        c_l := unsigned("00000000" & c_in(7 downto 0));
+        c_l := resize(unsigned(c_in(7 downto 0)), 16);
         c_h := unsigned(c_in(23 downto 8));
         c1_val := to_integer((shift_left(c_l, 3) - c_h) + (shift_left(c_l, 2) + c_l));
         c1 := to_signed(c1_val, 16);
         c1_test <= c1;
         
-        if (c1(c1'left) = '1') then
-            c_h1 := signed("1111" & c1(15 downto 8));
-        else
-            c_h1 := signed("0000" & c1(15 downto 8));    
-        end if ;
-        
-        c_l1 := signed("0000" & c1(7 downto 0));
+        c_h1 := resize(signed(c1(15 downto 8)), 12);
+        c_l1 := signed(resize(unsigned(c1(7 downto 0)), 12));
         c2_val := to_integer((shift_left(c_l1, 3) - c_h1) + (shift_left(c_l1, 2) + c_l1));
         c2 := to_unsigned(c2_val, 12);
         c2_test <= c2;
