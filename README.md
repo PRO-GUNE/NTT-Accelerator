@@ -79,7 +79,7 @@ The address and data flow of NTT RAM for read and write operation in every clock
 
 ### 4.2.3 Twiddle Factor ROM
 
-The twiddle factor ROM is used to store the precomputed twiddle factors. The twiddle factor ROM is implemented using the LUTs in the FPGA. The twiddle factor ROM is used to store the twiddle factors for the NTT. The twiddle factors are precomputed and stored in the ROM. Based on the symmetry property of twiddle factors in NTT and INTT, i.e., $\omega_n^i$ and $\omega_n^{-i}$ respectively, we have $\omega_n^i = \omega_n^{-i}$
+The twiddle factor ROM is used to store the precomputed twiddle factors. The twiddle factor ROM is implemented using the LUTs in the FPGA. The twiddle factor ROM is used to store the twiddle factors for the NTT. The twiddle factors are precomputed and stored in the ROM. Based on the symmetry property of twiddle factors in NTT and INTT, i.e., $\omega_n^i$ and $\omega_n^{-i}$ respectively, we have $\omega_n^i = \omega_n^{-i}$. As the $K^2 - RED$ modular reduction algorithm is used, the twiddle factors are stored in the ROM as $k^{-2} * \omega_n^i$. The ROM is implemented using a `.coe` file which contains the twiddle factors in hexadecimal format.
 
 ## 4.3 Software Components
 
