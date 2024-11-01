@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity BUTTERFLY_UNIT is
     port (
         clk : in std_logic;
-        mode : in std_logic_vector(1 downto 0); 
+        mode : in std_logic_vector(1 downto 0);
         u_in : in std_logic_vector(11 downto 0);
         v_in : in std_logic_vector(11 downto 0);
         twiddle : in std_logic_vector(11 downto 0);
@@ -51,19 +51,19 @@ architecture Behavioral of BUTTERFLY_UNIT is
     -- modular addition
     component MOD_ADD
         port (
-                a : in std_logic_vector(11 downto 0);
-                b : in std_logic_vector(11 downto 0);
-                sum : out std_logic_vector(11 downto 0)
-            );
+            a : in std_logic_vector(11 downto 0);
+            b : in std_logic_vector(11 downto 0);
+            sum : out std_logic_vector(11 downto 0)
+        );
     end component MOD_ADD;
-    
+
     -- modular addition
     component MOD_SUB
         port (
-                a : in std_logic_vector(11 downto 0);
-                b : in std_logic_vector(11 downto 0);
-                diff : out std_logic_vector(11 downto 0)
-            );
+            a : in std_logic_vector(11 downto 0);
+            b : in std_logic_vector(11 downto 0);
+            diff : out std_logic_vector(11 downto 0)
+        );
     end component MOD_SUB;
 
     -- reduction modulo k2-RED
@@ -86,13 +86,13 @@ architecture Behavioral of BUTTERFLY_UNIT is
     signal reg_u1_out, reg_u2_out, reg_u3_out, reg_u4_out : std_logic_vector(11 downto 0);
     signal reg_v1_out, reg_v2_out, reg_v3_out, reg_v4_out : std_logic_vector(11 downto 0);
     signal reg_twiddle_out : std_logic_vector(11 downto 0);
-    signal mux_u1_out, mux_v1_out, mux_twiddle_out, mux_vu1_out, mux_vk2red_out : std_logic_vector(11 downto 0);
+    signal mux_u1_out, mux_v1_out, mux_twiddle_out, mux_vu1_out, mux_vsub_out : std_logic_vector(11 downto 0);
     signal mod_k2_red_out, mod_sub_out, mod_add_out : std_logic_vector(11 downto 0);
     signal mod_mul_out : std_logic_vector(23 downto 0);
 
-    begin
-        -- register u1
-        reg_u1: REG_12 port map (
+begin
+    -- register u1
+    reg_u1: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -100,8 +100,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_u1_out
         );
 
-        -- register u2
-        reg_u2: REG_12 port map (
+    -- register u2
+    reg_u2: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -109,8 +109,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_u2_out
         );
 
-        -- register u3
-        reg_u3: REG_12 port map (
+    -- register u3
+    reg_u3: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -118,8 +118,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_u3_out
         );
 
-        -- register v1
-        reg_v1: REG_12 port map (
+    -- register v1
+    reg_v1: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -127,8 +127,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_v1_out
         );
 
-        -- register v2
-        reg_v2: REG_12 port map (
+    -- register v2
+    reg_v2: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -136,8 +136,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_v2_out
         );
 
-        -- register v3
-        reg_v3: REG_12 port map (
+    -- register v3
+    reg_v3: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -145,8 +145,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_v3_out
         );
 
-        -- register u4
-        reg_u4: REG_12 port map (
+    -- register u4
+    reg_u4: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -154,8 +154,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_u4_out
         );
 
-        -- register v4
-        reg_v4: REG_12 port map (
+    -- register v4
+    reg_v4: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -163,8 +163,8 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_v4_out
         );
 
-        -- twiddle factor register
-        reg_twiddle: REG_12 port map (
+    -- twiddle factor register
+    reg_twiddle: REG_12 port map (
             clk => clk,
             reset => '0',
             enable => '1',
@@ -172,84 +172,83 @@ architecture Behavioral of BUTTERFLY_UNIT is
             data_out => reg_twiddle_out
         );
 
-        -- mux twiddle
-        mux_2_twiddle: MUX_2 port map (
+    -- mux twiddle
+    mux_2_twiddle: MUX_2 port map (
             sel => mode(0),
             in0 => twiddle,
             in1 => reg_twiddle_out,
             c_out => mux_twiddle_out
         );
 
-        -- mux u1
-        mux_2_u1: MUX_2 port map (
+    -- mux u1
+    mux_2_u1: MUX_2 port map (
             sel => mode(0),
             in0 => reg_u3_out,
             in1 => u_in,
             c_out => mux_u1_out
         );
 
-        -- mux v1
-        mux_2_v1: MUX_2 port map (
+    -- mux v1
+    mux_2_v1: MUX_2 port map (
             sel => mode(0),
             in0 => mux_vu1_out,
             in1 => v_in,
             c_out => mux_v1_out
         );
 
-        -- mux vk2red
-        mux_2_vk2red: MUX_2 port map (
+    -- mux vu1
+    mux_2_vu1: MUX_2 port map (
             sel => mode(0),
             in0 => mod_k2_red_out,
             in1 => reg_v3_out,
-            c_out => mux_vk2red_out
-        );
-
-        -- mux vu1
-        mux_2_vu1: MUX_2 port map (
-            sel => mode(0),
-            in0 => reg_u3_out,
-            in1 => v_in,
             c_out => mux_vu1_out
         );
 
-        -- mod sub
-        mod_sub_unit: MOD_SUB port map (
+    mux_2_vsub: MUX_2 port map (
+            sel => mode(0),
+            in0 => v_in,
+            in1 => mod_sub_out,
+            c_out => mux_vsub_out
+        );
+
+    -- mod sub
+    mod_sub_unit: MOD_SUB port map (
             a => mux_u1_out,
             b => mux_v1_out,
             diff => mod_sub_out
         );
-        
-        -- multiplication
-        mul_unit: MUL port map (
-            a => mod_sub_out,
+
+    -- multiplication
+    mul_unit: MUL port map (
+            a => mux_vsub_out,
             b => mux_twiddle_out,
             result => mod_mul_out
         );
 
-        -- reduction modulo k2-RED
-        mod_k2_red_unit: MOD_K2_RED port map (
+    -- reduction modulo k2-RED
+    mod_k2_red_unit: MOD_K2_RED port map (
             c_in => mod_mul_out,
             c_out => mod_k2_red_out
         );
 
-        -- mod add
-        mod_add_unit: MOD_ADD port map (
-            a => reg_u4_out,
-            b => mux_vk2red_out,
+    -- mod add
+    mod_add_unit: MOD_ADD port map (
+            a => reg_u3_out,
+            b => mux_vu1_out,
             sum => mod_add_out
         );
 
-        -- mux u out
-        mux_3_u_out: MUX_3 port map (
+    -- mux u out
+    mux_3_u_out: MUX_3 port map (
             sel => mode,
             in0 => mod_add_out,
             in1 => mod_add_out,
             in2 => reg_u4_out,
             c_out => u_out
         );
-        
-        -- mux v out
-        mux_3_v_out: MUX_3 port map (
+
+    -- mux v out
+    mux_3_v_out: MUX_3 port map (
             sel => mode,
             in0 => mod_sub_out,
             in1 => mod_k2_red_out,

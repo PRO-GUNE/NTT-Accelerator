@@ -57,6 +57,12 @@ begin
     b <= "110100000000";
     wait for 10 ns;
     assert diff = "000000000001" report "Test case 5 failed" severity error;
+    
+    -- Test case 6: a = 3276, b = 705 -> 2571
+    a <= "110011001100";
+    b <= "001011000001";
+    wait for 10 ns;
+    assert diff = "101000001011" report "Test case 6 failed" severity error;
 
     -- End simulation
     wait;

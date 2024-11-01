@@ -1,6 +1,8 @@
 -- Include the REG_12 component
 library ieee;
 use ieee.std_logic_1164.all;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 -- Entity declaration
 entity BUFFER_4 is

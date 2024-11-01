@@ -48,6 +48,13 @@ begin
     wait for 10 ns;
     assert result_out = "001111111111000000000001" report "Test case 3 failed" severity error;
     wait for 10 ns;
+
+    -- Test case 4: Multiplication of specific test case
+    a_in <= "101011011111"; -- 2783
+    b_in <= "000000010001"; -- 17
+    wait for 10 ns;
+    assert result_out = "000000001011100011001111" report "Test case 4 failed" severity error;
+    wait for 10 ns;
     end process;
 
 end architecture testbench;

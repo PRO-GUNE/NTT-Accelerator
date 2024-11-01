@@ -38,6 +38,11 @@ begin
     wait for 100 ns;
     assert c_out = "011101010011" report "Test 3 failed" severity error;
     
+    -- Test 4: Random values
+    c_in <= "000000000000011001000110"; -- 1606 -> 1765
+    wait for 100 ns;
+    assert c_out = "011011100101" report "Test 4 failed" severity error;
+    
     -- End simulation
     wait;
     end process;
