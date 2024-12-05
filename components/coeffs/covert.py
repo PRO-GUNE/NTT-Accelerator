@@ -7,14 +7,10 @@ k = 13
 # modular inverse of k^2 mod q is 2285
 K2_INV = 2285
 
-# skip the first 2 lines and last line
-with open("omega_values.txt", "r") as file:
+with open("phi_values.txt", "r") as file:
     for i, line in enumerate(file):
-        if i % 2 == 0:
-            continue
         value = int(line.strip()[:-1], 16)
         omega_values.append(value)
-
 
 values = []
 for value in omega_values:
