@@ -6,7 +6,7 @@ end test_NTT_RAM;
 
 architecture testbench of test_NTT_RAM is
     -- Constants
-    constant ADDR_SIZE : integer := 6;
+    constant ADDR_SIZE : integer := 5;
     constant DATA_SIZE : integer := 48;
     
     -- Signals
@@ -22,7 +22,7 @@ architecture testbench of test_NTT_RAM is
     -- Component instantiation
     component NTT_RAM is
         generic (
-            ADDR_SIZE : integer := 6;
+            ADDR_SIZE : integer := 5;
             DATA_SIZE : integer := 48
         );
         port (

@@ -8,7 +8,7 @@ architecture testbench of test_DUAL_PORT_RAM is
     -- Component declaration for the unit under test
     component DUAL_PORT_RAM
         generic (
-            ADDR_SIZE : integer := 6;
+            ADDR_SIZE : integer := 5;
             DATA_SIZE : integer := 48
         );
         port (

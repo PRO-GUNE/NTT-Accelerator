@@ -6,7 +6,7 @@ end test_NTT_CT;
 
 architecture testbench of test_NTT_CT is
     -- Constants
-    constant ADDR_SIZE : integer := 6;
+    constant ADDR_SIZE : integer := 5;
     constant DATA_SIZE : integer := 48;
     
     -- Clock signal
@@ -50,7 +50,7 @@ architecture testbench of test_NTT_CT is
     -- NTT RAM Component
     component NTT_RAM is
         generic (
-            ADDR_SIZE : integer := 6;
+            ADDR_SIZE : integer := 5;
             DATA_SIZE : integer := 48
         );
         port (
@@ -119,6 +119,17 @@ begin
     end process;
 
     -- Main process
-    
+    -- Load data to the RAM
+    main_process : process
+    begin
+        write_en <= '1';
+        wait for 10 ns;
+        data_in_mode <= '0';
+        wait for 10 ns;
+
+        for i in 0 to 63 loop
+            data_in <=     
+        end loop
+    end process
 
 end testbench;

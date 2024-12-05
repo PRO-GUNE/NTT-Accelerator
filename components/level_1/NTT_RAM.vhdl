@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 -- Entity declaration
 entity NTT_RAM is
     generic (
-        ADDR_SIZE : integer := 6;
+        ADDR_SIZE : integer := 5;
         DATA_SIZE : integer := 48
     );
     port (
@@ -24,7 +24,7 @@ architecture behavioral of NTT_RAM is
     -- Declare two instances of DUAL_PORT_RAM component
     component DUAL_PORT_RAM is
         generic (
-            ADDR_SIZE : integer := 6;
+            ADDR_SIZE : integer := 5;
             DATA_SIZE : integer := 48
         );
         port (
