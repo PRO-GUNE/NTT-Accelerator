@@ -44,51 +44,63 @@ begin
     process
     begin
         clk <= not clk;
-        wait for 10 ns;
+        wait for 5 ns;
     end process;
 
     process
     begin
-        -- Idle cycles
-        wait for 120 ns;
-
         -- Test 1: All inputs and outputs set to '0'
         mode <= "10";
         u_in <= "000000000000";
         v_in <= "000000000000";
         twiddle <= "000000000000";
-        wait for 200 ns;
+        wait for 10 ns;
+        u_in <= "000000000001";
+        v_in <= "000000000001";
+        wait for 10 ns;
+        u_in <= "000000000010";
+        v_in <= "000000000010";
+        wait for 20 ns;
         assert u_out = "000000000000" report "Test 1 failed for u_out" severity error;
         assert v_out = "000000000000" report "Test 1 failed for v_out" severity error;
 
-        -- Test 2: Random inputs
+        -- Test 2: u/v mode
         mode <= "10";
         u_in <= "110011001100";
         v_in <= "101011011111";
         twiddle <= "000000000001";
-        wait for 200 ns;
+        wait for 40 ns;
         assert u_out = "110011001100" report "Test 2 failed for u_out" severity error;
         assert v_out = "101011011111" report "Test 2 failed for v_out" severity error;
 
-        -- Test 3: Random inputs
-        mode <= "00";
-        u_in <= "110011001100";
-        v_in <= "101011011111";
-        twiddle <= "000000000001";
-        wait for 200 ns;
-        -- 885 is the given result although the exact mathematical result is 652
-        assert u_out = "001101110101" report "Test 3 failed for u_out" severity error;
-        -- 2338 is the given result although the exact mathematical result is 2571
-        assert v_out = "100100100010" report "Test 3 failed for v_out" severity error;
-
-        -- Test 4: Random inputs
+        -- Test 3: Add/Sub mode
         mode <= "01";
-        u_in <= "110011001100";
-        v_in <= "101011011111";
-        twiddle <= "000000000001";
-        wait for 200 ns;
-        assert u_out = "101010101010" report "Test 4 failed for u_out" severity error;
-        assert v_out = "101001110101" report "Test 4 failed for v_out" severity error;
+        u_in <= "000001000000"; -- 64
+        v_in <= "000011000000"; -- 192
+        twiddle <= "100011101101"; -- 2285 (w^0 * k^-2 mod 3329)
+        wait for 40 ns;
+        assert u_out = "000100000000" report "Test 3 failed for u_out" severity error; -- 256
+        assert v_out = "110010000001" report "Test 3 failed for v_out" severity error; -- 3201
+
+        -- Test 4: u +/- vw mode 
+        mode <= "00";
+        u_in <= "000001000000"; -- 64
+        v_in <= "000011000000"; -- 192
+        twiddle <= "101000001011"; -- 2571 (w^64 * k^-2 mod 3329)
+        wait for 40 ns;
+        assert u_out = "100110011101" report "Test 4 failed for u_out" severity error; -- 2461
+        assert v_out = "001111100100" report "Test 4 failed for v_out" severity error; -- 996
+
+        mode <= "00";
+        u_in <= "000000000000"; -- 0
+        v_in <= "000010000000"; -- 128
+        twiddle <= "101000001011"; -- 2571 (w^64 * k^-2 mod 3329)
+        wait for 40 ns;
+        assert u_out = "011000111110" report "Test 5 failed for u_out" severity error; -- 1598
+        assert v_out = "011011000011" report "Test 5 failed for v_out" severity error; -- 1731
+
+
+        wait;
 
     end process;
 

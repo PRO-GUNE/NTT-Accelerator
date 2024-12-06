@@ -1,14 +1,15 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
+use ieee.numeric_std.all;
 use ieee.std_logic_unsigned.all;
 
 entity NTT_CORE is
     port(
         clk : in std_logic;
-        mode : in std_logic_vector(1 downto 0);
+        mode : in std_logic_vector(7 downto 0);
         reset : in std_logic;
         enable : in std_logic;
+        write_en : in std_logic;
         data_in : in std_logic_vector(47 downto 0);
         twiddle_1 : in std_logic_vector(11 downto 0);
         twiddle_2 : in std_logic_vector(11 downto 0);
@@ -22,7 +23,7 @@ architecture Behavioral of NTT_CORE is
     component BUTTERFLY_CORE is
         port (
             clk : in std_logic;
-            mode : in std_logic_vector(1 downto 0);
+            mode : in std_logic_vector(7 downto 0);
             u1_in : in std_logic_vector(11 downto 0);
             u2_in : in std_logic_vector(11 downto 0);
             v1_in : in std_logic_vector(11 downto 0);
@@ -42,6 +43,7 @@ architecture Behavioral of NTT_CORE is
             clk : in std_logic;
             reset : in std_logic;
             enable : in std_logic;
+            sel : in std_logic_vector(1 downto 0);
             data_in_0 : in std_logic_vector(11 downto 0);
             data_in_1 : in std_logic_vector(11 downto 0);
             data_in_2 : in std_logic_vector(11 downto 0);
@@ -51,6 +53,7 @@ architecture Behavioral of NTT_CORE is
     end component SIPO_BUFFER_UNIT;
 
     signal u1_out, u2_out, v1_out, v2_out : std_logic_vector(11 downto 0);
+    signal sel: std_logic_vector(1 downto 0) := (others => '0');
 
 begin
     -- Instantiate the BUTTERFLY_CORE
@@ -77,6 +80,7 @@ begin
             clk => clk,
             reset => reset,
             enable => enable,
+            sel => sel,
             data_in_0 => u1_out,
             data_in_1 => u2_out,
             data_in_2 => v1_out,
@@ -84,4 +88,21 @@ begin
             data_out => BF_out
         );
     
+    sel_process: process(clk, write_en)
+        variable count : integer := 0;
+    begin
+        if rising_edge(clk) then
+            if write_en = '1' then
+                count := count + 1;
+
+                if count > 3 then 
+                    count := count - 4;
+                end if;
+
+                sel <= std_logic_vector(to_unsigned(count, 2));
+            else
+                sel <= "00";
+            end if;
+        end if;
+    end process;
 end Behavioral;

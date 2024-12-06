@@ -32,7 +32,7 @@ begin
     -- Instantiate the BUFFER_N module
     UUT: BUFFER_N
         generic map(
-            N => 4 -- Number of REG_12 instances
+            N => 5 -- Number of REG_12 instances
         )
         port map (
             data_in => data_in,
@@ -62,6 +62,7 @@ begin
         wait for 10 ns;
         assert data_out = "000000000000000000000000000000000000000000000000" report "Test 1 failed for data_out" severity error;
 
+        -- Test 2: All inputs set to '1'
         enable <= '1';
         data_in <= "111111111111";
         wait for 10 ns;
@@ -72,19 +73,19 @@ begin
         data_in <= "111100001111";
         wait for 10 ns;
         
-        -- Test 2: All inputs set to '1'
-        data_in <= "000000000000";
-        assert data_out = "111100001111010101010101101010101010111111111111" report "Test 2 failed for data_out" severity error;
-        wait for 10 ns;
-        
         -- Test 3: Random inputs
-        assert data_out = "000000000000111100001111010101010101101010101010" report "Test 3 failed for data_out" severity error;
+        data_in <= "000011110000";
         wait for 10 ns;
+        assert data_out = "111111111111101010101010010101010101111100001111" report "Test 2 failed for data_out" severity error;
         
         -- Test 4: Random inputs
-        assert data_out = "000000000000000000000000111100001111010101010101" report "Test 4 failed for data_out" severity error;
+        data_in <= "000000000000";
         wait for 10 ns;
-
+        assert data_out = "101010101010010101010101111100001111000011110000" report "Test 3 failed for data_out" severity error;
+        
+        wait for 10 ns;
+        assert data_out = "010101010101111100001111000011110000000000000000" report "Test 4 failed for data_out" severity error;
+        
         wait;
 
     end process;

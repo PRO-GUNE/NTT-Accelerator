@@ -7,15 +7,15 @@ end test_BUTTERFLY_CORE;
 
 architecture Behavioral of test_BUTTERFLY_CORE is
     signal clk : std_logic := '0';
-    signal mode : std_logic_vector(1 downto 0) := "00";
-    signal u1_in, u2_in, v1_in, v2_in : std_logic_vector(11 downto 0);
-    signal twiddle_1, twiddle_2, twiddle_3 : std_logic_vector(11 downto 0);
-    signal u1_out, u2_out, v1_out, v2_out : std_logic_vector(11 downto 0);
+    signal mode : std_logic_vector(7 downto 0) := "00000000";
+    signal u1_in, u2_in, v1_in, v2_in : std_logic_vector(11 downto 0) := (others => '0');
+    signal twiddle_1, twiddle_2, twiddle_3 : std_logic_vector(11 downto 0) := (others => '0');
+    signal u1_out, u2_out, v1_out, v2_out : std_logic_vector(11 downto 0) := (others => '0');
 
     component BUTTERFLY_CORE is
         port (
             clk : in std_logic;
-            mode : in std_logic_vector(1 downto 0);
+            mode : in std_logic_vector(7 downto 0);
             u1_in : in std_logic_vector(11 downto 0);
             u2_in : in std_logic_vector(11 downto 0);
             v1_in : in std_logic_vector(11 downto 0);
@@ -51,31 +51,44 @@ begin
     clk_process : process
     begin
         clk <= not clk;
-        wait for 10 ns;
+        wait for 5 ns;
     end process;
 
     stim_proc: process
     begin
-        -- Test case 1
-        mode <= "00";
-        u1_in <= "000000000001"; u2_in <= "000000000010";
-        v1_in <= "000000000011"; v2_in <= "000000000100";
-        twiddle_1 <= "000000000101"; twiddle_2 <= "000000000110"; twiddle_3 <= "000000000111";
-        wait for 100 ns;
+        -- Test case 1 - u +/- vw mode
+        mode <= "00000000";
+        u1_in <= "000000000000"; -- 0
+        u2_in <= "000001000000"; -- 64
+        v1_in <= "000010000000"; -- 128
+        v2_in <= "000011000000"; -- 192
+        twiddle_1 <= "101000001011"; --2571 (w^64 * k^-2 mod 3329)
+        twiddle_2 <= "101110011010"; --2970 (w^32 * k^-2 mod 3329)
+        twiddle_3 <= "011100010100"; --1812 (w^96 * k^-2 mod 3329)
+        wait for 40 ns;
+        assert u1_out = "101000001111" report "Test 1 failed for u1_out" severity error; -- 2575
+        assert v1_out = "011100101111" report "Test 1 failed for v1_out" severity error; -- 1839
+        assert u2_out = "001001101101" report "Test 1 failed for u2_out" severity error; -- 621
+        assert v2_out = "011001010111" report "Test 1 failed for v2_out" severity error; -- 1623
 
-        -- Test case 2
-        mode <= "01";
-        u1_in <= "000000001000"; u2_in <= "000000001001";
-        v1_in <= "000000001010"; v2_in <= "000000001011";
-        twiddle_1 <= "000000001100"; twiddle_2 <= "000000001101"; twiddle_3 <= "000000001110";
-        wait for 100 ns;
-
+        -- Test case 2 - Add/Sub mode
+        mode <= "01010101";
+        twiddle_1 <= "100011101101"; --2285 (w^0 * k^-2 mod 3329)
+        twiddle_2 <= "100011101101"; --2285 (w^0 * k^-2 mod 3329)
+        twiddle_3 <= "100011101101"; --2285 (w^0 * k^-2 mod 3329)
+        wait for 40 ns;
+        assert u1_out = "000110000000" report "Test 2 failed for u1_out" severity error; -- 384
+        assert u2_out = "110010000001" report "Test 2 failed for u2_out" severity error; -- 3201
+        assert v1_out = "110000000001" report "Test 2 failed for v1_out" severity error; -- 3073
+        assert v2_out = "000000000000" report "Test 2 failed for v2_out" severity error; -- 0
+        
         -- Test case 3
-        mode <= "10";
-        u1_in <= "000000010000"; u2_in <= "000000010001";
-        v1_in <= "000000010010"; v2_in <= "000000010011";
-        twiddle_1 <= "000000010100"; twiddle_2 <= "000000010101"; twiddle_3 <= "000000010110";
-        wait for 100 ns;
+        mode <= "10101010";
+        wait for 80 ns;
+        assert u1_out = "000000000000" report "Test 3 failed for u1_out" severity error; -- 0
+        assert u2_out = "000001000000" report "Test 3 failed for u2_out" severity error; -- 64
+        assert v1_out = "000010000000" report "Test 3 failed for v1_out" severity error; -- 128
+        assert v2_out = "000011000000" report "Test 3 failed for v2_out" severity error; -- 192
 
         wait;
     end process stim_proc;

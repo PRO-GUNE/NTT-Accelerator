@@ -54,22 +54,22 @@ begin
         addr_10 <= "0000000";
         addr_11 <= "0000000";
         wait for 10 ns;
-        assert data_00 = X"011" report "Test 1 failed" severity error;
+        assert data_00 = X"8ed" report "Test 1 failed" severity error;
 
         -- Test 2: Read data from address 127
         addr_00 <= "1111111";
         wait for 10 ns;
-        assert data_00 = X"497" report "Test 2 failed" severity error;
+        assert data_00 = X"cb3" report "Test 2 failed" severity error;
 
         -- Test 3: Read data from address 32
         addr_00 <= "0100000";
         wait for 10 ns;
-        assert data_00 = X"ac9" report "Test 3 failed" severity error;
+        assert data_00 = X"4c7" report "Test 3 failed" severity error;
 
         -- Test 4: Read data from address 63
         addr_10 <= "0111111";
         wait for 10 ns;
-        assert data_00 = X"86a" report "Test 4 failed" severity error;
+        assert data_10 = X"806" report "Test 4 failed" severity error;
 
         wait;
     end process;

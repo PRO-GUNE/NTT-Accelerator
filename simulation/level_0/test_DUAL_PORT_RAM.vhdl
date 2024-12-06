@@ -15,8 +15,8 @@ architecture testbench of test_DUAL_PORT_RAM is
             clk : in std_logic;
             en1 : in std_logic;
             en2 : in std_logic;
-            addr1 : in std_logic_vector(ADDR_SIZE-1 downto 0);
-            addr2 : in std_logic_vector(ADDR_SIZE-1 downto 0);
+            addr1 : in std_logic_vector(ADDR_SIZE downto 0);
+            addr2 : in std_logic_vector(ADDR_SIZE downto 0);
             write_en : in std_logic;
             data_in : in std_logic_vector(DATA_SIZE-1 downto 0);
             data_out : out std_logic_vector(DATA_SIZE-1 downto 0)

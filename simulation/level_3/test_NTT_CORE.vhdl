@@ -8,9 +8,10 @@ end test_NTT_CORE;
 
 architecture testbench of test_NTT_CORE is
     signal clk : std_logic := '0';
-    signal mode : std_logic_vector(1 downto 0) := (others => '0');
+    signal mode : std_logic_vector(7 downto 0) := (others => '0');
     signal reset : std_logic := '0';
     signal enable : std_logic := '1';
+    signal write_en : std_logic := '1';
     signal data_in : std_logic_vector(47 downto 0) := (others => '0');
     signal twiddle_1 : std_logic_vector(11 downto 0) := (others => '0');
     signal twiddle_2 : std_logic_vector(11 downto 0) := (others => '0');
@@ -20,9 +21,10 @@ architecture testbench of test_NTT_CORE is
     component NTT_CORE is
         port (
             clk : in std_logic;
-            mode : in std_logic_vector(1 downto 0);
+            mode : in std_logic_vector(7 downto 0);
             reset : in std_logic;
             enable : in std_logic;
+            write_en : in std_logic;
             data_in : in std_logic_vector(47 downto 0);
             twiddle_1 : in std_logic_vector(11 downto 0);
             twiddle_2 : in std_logic_vector(11 downto 0);
@@ -39,6 +41,7 @@ begin
             mode => mode,
             reset => reset,
             enable => enable,
+            write_en => write_en,
             data_in => data_in,
             twiddle_1 => twiddle_1,
             twiddle_2 => twiddle_2,
@@ -69,7 +72,7 @@ begin
         wait for 200 ns;
 
         -- Test case 3: Change mode and apply different data
-        mode <= "01";
+        mode <= "01010101";
         data_in <= "000000000000000000000000000000101010101010101010";
         twiddle_1 <= "000000000010";
         twiddle_2 <= "000000000010";
@@ -77,7 +80,7 @@ begin
         wait for 200 ns;
 
         -- Test case 3: Change mode and apply different data
-        mode <= "10";
+        mode <= "10101010";
         data_in <= "000000000000000000000000000000101010101010101010";
         twiddle_1 <= "000000000010";
         twiddle_2 <= "000000000010";
