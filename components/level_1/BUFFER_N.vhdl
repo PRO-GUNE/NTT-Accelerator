@@ -39,10 +39,10 @@ begin
     regs(0) <= data_in;
 
     -- Output the data
-    data_out(11 downto 0) <= regs(N-4);
-    data_out(23 downto 12) <= regs(N-3);
-    data_out(35 downto 24) <= regs(N-2);
-    data_out(47 downto 36) <= regs(N-1); 
+    data_out(11 downto 0) <= regs(N-1);
+    data_out(23 downto 12) <= regs(N-2);
+    data_out(35 downto 24) <= regs(N-3);
+    data_out(47 downto 36) <= regs(N-4); 
 
     -- Generate loop to instantiate N REG_12 components
     gen_regs : for i in 1 to N-1 generate

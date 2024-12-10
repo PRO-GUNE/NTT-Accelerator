@@ -34,6 +34,7 @@ This file includes the validation simulation tests run, to be run and any bugs t
 - [x] The NTT ROM stores $k^{-2} * \omega$ values to compensate for the $k^2$ multiplication in the modular reduction algorithm. Note here, the value $k^{-2}$ means the modular inverse of $k^2$ which is of the for, $ x = 3329*n + 2285 $. As $a*b*c \mod q = a*b \mod q * c \mod q$, the value stored in the ROM is $k^{-2} * \omega  \mod q $ which is the twiddle factor multiplied by $ 2285 $.
 - [x] We need seperate mode signals for each of the butterfly cores as in some stages we need different modes for different butterfly unit. To accomplish this, we will create a 8 bit bus (2 bits * 4) with 2 bits addressing each butterfly unit.
 - [x] Butterfly unit - Remember to have the twiddle factors multiplied by the modular of $ k^2 $ when being applied in testcases. Given these conditions, the tests give the correct results.
+- [x] The given architecture for the butterfly has an issue as in mode=0, the v line and u line takes different times to reach the end mux, making it impossible to pipeline the results. Hence the in put to the mux_2_vsub multiplexor is taken as the output of reg3. Also, in the given architecture, we cannot perform both $u - v*\omega$ and $(v-u)*\omega$ by doing the subtraction operation in a single order. Hence, in this implementation, priority is given to $u - v*\omega$ 
 
 # Level 2 Components
 - [x] BUTTERFLY_CORE

@@ -9,7 +9,7 @@ entity NTT_CORE is
         mode : in std_logic_vector(7 downto 0);
         reset : in std_logic;
         enable : in std_logic;
-        write_en : in std_logic;
+        sel : in std_logic_vector(1 downto 0);
         data_in : in std_logic_vector(47 downto 0);
         twiddle_1 : in std_logic_vector(11 downto 0);
         twiddle_2 : in std_logic_vector(11 downto 0);
@@ -24,6 +24,8 @@ architecture Behavioral of NTT_CORE is
         port (
             clk : in std_logic;
             mode : in std_logic_vector(7 downto 0);
+            reset : in std_logic;
+            enable : in std_logic;
             u1_in : in std_logic_vector(11 downto 0);
             u2_in : in std_logic_vector(11 downto 0);
             v1_in : in std_logic_vector(11 downto 0);
@@ -53,7 +55,6 @@ architecture Behavioral of NTT_CORE is
     end component SIPO_BUFFER_UNIT;
 
     signal u1_out, u2_out, v1_out, v2_out : std_logic_vector(11 downto 0);
-    signal sel: std_logic_vector(1 downto 0) := (others => '0');
 
 begin
     -- Instantiate the BUTTERFLY_CORE
@@ -61,6 +62,8 @@ begin
         port map (
             clk => clk,
             mode => mode,
+            reset => reset,
+            enable => enable,
             u1_in => data_in(11 downto 0),
             u2_in => data_in(23 downto 12),
             v1_in => data_in(35 downto 24),
@@ -82,27 +85,10 @@ begin
             enable => enable,
             sel => sel,
             data_in_0 => u1_out,
-            data_in_1 => u2_out,
-            data_in_2 => v1_out,
+            data_in_1 => v1_out,
+            data_in_2 => u2_out,
             data_in_3 => v2_out,
             data_out => BF_out
         );
     
-    sel_process: process(clk, write_en)
-        variable count : integer := 0;
-    begin
-        if rising_edge(clk) then
-            if write_en = '1' then
-                count := count + 1;
-
-                if count > 3 then 
-                    count := count - 4;
-                end if;
-
-                sel <= std_logic_vector(to_unsigned(count, 2));
-            else
-                sel <= "00";
-            end if;
-        end if;
-    end process;
 end Behavioral;

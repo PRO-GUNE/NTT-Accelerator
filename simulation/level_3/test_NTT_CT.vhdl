@@ -18,6 +18,7 @@ architecture testbench of test_NTT_CT is
     signal mode : std_logic_vector(7 downto 0) := (others => '0');
     signal reset : std_logic := '0';
     signal enable : std_logic := '0';
+    signal sel : std_logic_vector(1 downto 0) := (others => '0');
     signal BF_out : std_logic_vector(DATA_SIZE-1 downto 0);
 
     -- Twiddle ROM Signals
@@ -34,6 +35,7 @@ architecture testbench of test_NTT_CT is
 
     -- Output monitoring signals
     signal val1, val2, val3, val4 : std_logic_vector(11 downto 0) := (others => '0');
+    signal bval1, bval2, bval3, bval4 : std_logic_vector(11 downto 0) := (others => '0');
 
     -- Twiddle ROM Component
     component TWIDDLE_ROM
@@ -73,7 +75,7 @@ architecture testbench of test_NTT_CT is
             mode : in std_logic_vector(7 downto 0);
             reset : in std_logic;
             enable : in std_logic;
-            write_en : in std_logic;
+            sel : in std_logic;
             data_in : in std_logic_vector(47 downto 0);
             twiddle_1 : in std_logic_vector(11 downto 0);
             twiddle_2 : in std_logic_vector(11 downto 0);
@@ -121,7 +123,7 @@ begin
             mode => mode,
             reset => reset,
             enable => enable,
-            write_en => write_en,
+            sel => sel,
             data_in => data_out,
             twiddle_1 => twiddle_00,
             twiddle_2 => twiddle_10,
@@ -140,13 +142,19 @@ begin
     write_process : process
         variable n : integer := 128;
     begin
+        -- reset
+        reset <= '1';
+        wait for 10 ns;
+        reset <= '0';
+        wait for 10 ns;
+
         -- NTT Core disabled
         enable <= '0';
         -- Load data to the RAM
         write_en <= '1';
         data_in_mode <= '0';
 
-        wait for 10 ns;
+        wait for 20 ns;
         n := n/2;
 
 
@@ -156,181 +164,196 @@ begin
             data_in0(23 downto 12) <= std_logic_vector(to_unsigned(2*(32+i), 12));
             data_in0(35 downto 24) <= std_logic_vector(to_unsigned(2*(n+i), 12));
             data_in0(47 downto 36) <= std_logic_vector(to_unsigned(2*(32+n+i), 12));
-            wait for 10 ns;
+            wait for 20 ns;
         end loop;
 
         -- Send data to the NTT Core
         enable <= '1';
-        wait for 140 ns;
+        write_en <= '0';
+        addr1 <= std_logic_vector(to_unsigned(0, 6));
+        wait for 40 ns;
 
         data_in_mode <= '1';
         write_en <= '1';
         
-        -- Round 1 (Stage 1 and Stage 2)
-        for i in 0 to 7 loop
-            -- Reading from memory
-            addr1 <= std_logic_vector(to_unsigned(i, 6)); -- 0
-            wait for 10 ns;
-            addr1 <= std_logic_vector(to_unsigned(i+1*8, 6)); -- 8
-            wait for 10 ns;
-            addr1 <= std_logic_vector(to_unsigned(i+2*8, 6)); -- 16
-            wait for 10 ns;
-            addr1 <= std_logic_vector(to_unsigned(i+3*8, 6)); -- 24
-            wait for 10 ns;
-        end loop;
-
-        -- wait for 6 clk cycles
-        wait for 60 ns;
-
-        -- Round 2 (Stage 3 and Stage 4)
-        for j in 0 to 3 loop
-            for i in 0 to 1 loop
-                -- Reading from memory
-                addr1 <= std_logic_vector(to_unsigned(j*8+i, 6)); -- 0
-                wait for 10 ns;
-                addr1 <= std_logic_vector(to_unsigned(j*8+i+1*2, 6)); -- 2
-                wait for 10 ns;
-                addr1 <= std_logic_vector(to_unsigned(j*8+i+2*2, 6)); -- 4
-                wait for 10 ns;
-                addr1 <= std_logic_vector(to_unsigned(j*8+i+3*2, 6)); -- 6
-                wait for 10 ns;
-            end loop;
-        end loop;
-
-        -- wait for 6 clk cycles
-        wait for 60 ns;
-
-        -- Round 3 (Stage 5 and Stage 6)
-        for i in 0 to 7 loop
-            addr1 <= std_logic_vector(to_unsigned(i*4, 6)); -- 0
-            wait for 10 ns;
-            addr1 <= std_logic_vector(to_unsigned(i*4+1*1, 6)); -- 1
-            wait for 10 ns;
-            addr1 <= std_logic_vector(to_unsigned(i*4+2*1, 6)); -- 2
-            wait for 10 ns;
-            addr1 <= std_logic_vector(to_unsigned(i*4+3*1, 6)); -- 3
-            wait for 10 ns;
-        end loop;
-
-        -- wait for 6 clk cycles
-        wait for 60 ns;
-
-        -- Round 4 (Stage 7)
-        for i in 0 to 31 loop
-            -- Reading from memory
-            addr1 <= std_logic_vector(to_unsigned(i, 6));
-            wait for 10 ns;
-        end loop;
-
-        -- wait for 6 clk cycles
-        wait for 60 ns;
-
-        -- Disable NTT Core
-        enable <= '0';
-        write_en <= '0';
-        
         wait;
+        -- data_in_mode <= '1';
+        -- write_en <= '1';
+        
+        -- -- Round 1 (Stage 1 and Stage 2)
+        -- for i in 0 to 7 loop
+        --     -- Reading from memory
+        --     addr1 <= std_logic_vector(to_unsigned(i, 6)); -- 0
+        --     wait for 10 ns;
+        --     addr1 <= std_logic_vector(to_unsigned(i+1*8, 6)); -- 8
+        --     wait for 10 ns;
+        --     addr1 <= std_logic_vector(to_unsigned(i+2*8, 6)); -- 16
+        --     wait for 10 ns;
+        --     addr1 <= std_logic_vector(to_unsigned(i+3*8, 6)); -- 24
+        --     wait for 10 ns;
+        -- end loop;
+
+        -- -- wait for 6 clk cycles
+        -- wait for 60 ns;
+
+        -- -- Round 2 (Stage 3 and Stage 4)
+        -- for j in 0 to 3 loop
+        --     for i in 0 to 1 loop
+        --         -- Reading from memory
+        --         addr1 <= std_logic_vector(to_unsigned(j*8+i, 6)); -- 0
+        --         wait for 10 ns;
+        --         addr1 <= std_logic_vector(to_unsigned(j*8+i+1*2, 6)); -- 2
+        --         wait for 10 ns;
+        --         addr1 <= std_logic_vector(to_unsigned(j*8+i+2*2, 6)); -- 4
+        --         wait for 10 ns;
+        --         addr1 <= std_logic_vector(to_unsigned(j*8+i+3*2, 6)); -- 6
+        --         wait for 10 ns;
+        --     end loop;
+        -- end loop;
+
+        -- -- wait for 6 clk cycles
+        -- wait for 60 ns;
+
+        -- -- Round 3 (Stage 5 and Stage 6)
+        -- for i in 0 to 7 loop
+        --     addr1 <= std_logic_vector(to_unsigned(i*4, 6)); -- 0
+        --     wait for 10 ns;
+        --     addr1 <= std_logic_vector(to_unsigned(i*4+1*1, 6)); -- 1
+        --     wait for 10 ns;
+        --     addr1 <= std_logic_vector(to_unsigned(i*4+2*1, 6)); -- 2
+        --     wait for 10 ns;
+        --     addr1 <= std_logic_vector(to_unsigned(i*4+3*1, 6)); -- 3
+        --     wait for 10 ns;
+        -- end loop;
+
+        -- -- wait for 6 clk cycles
+        -- wait for 60 ns;
+
+        -- -- Round 4 (Stage 7)
+        -- for i in 0 to 31 loop
+        --     -- Reading from memory
+        --     addr1 <= std_logic_vector(to_unsigned(i, 6));
+        --     wait for 10 ns;
+        -- end loop;
+
+        -- -- wait for 6 clk cycles
+        -- wait for 60 ns;
+
+        -- -- Disable NTT Core
+        -- enable <= '0';
+        -- write_en <= '0';
+        
+        -- wait;
     end process;
 
     -- Main process
     main_process : process
         variable addr : integer := 1;
     begin
-        wait for 320 ns;
+        wait for 680 ns;
 
-        -- Round 1 (Stage 1 and Stage 2)
-        for i in 0 to 7 loop
-            -- twiddle factor addresses
-            addr_00 <= std_logic_vector(to_unsigned(addr, 7));
-            addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
-            addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
-
-            -- Reading from memory
-            addr2 <= std_logic_vector(to_unsigned(i, 6)); -- 0
-            wait for 10 ns;
-            addr2 <= std_logic_vector(to_unsigned(i+1*8, 6)); -- 8
-            wait for 10 ns;
-            addr2 <= std_logic_vector(to_unsigned(i+2*8, 6)); -- 16
-            wait for 10 ns;
-            addr2 <= std_logic_vector(to_unsigned(i+3*8, 6)); -- 24
-            wait for 10 ns;
-        end loop;
-
-        -- wait 6 clk cycles 
-        wait for 60 ns;
-        addr := 4;
-
-        -- Round 2 (Stage 3 and Stage 4)
-        for j in 0 to 3 loop
-            -- twiddle factor addresses
-            addr_00 <= std_logic_vector(to_unsigned(addr, 7));
-            addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
-            addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
-
-            for i in 0 to 1 loop
-                -- Reading from memory
-                addr2 <= std_logic_vector(to_unsigned(j*8+i, 6)); -- 0
-                wait for 10 ns;
-                addr2 <= std_logic_vector(to_unsigned(j*8+i+1*2, 6)); -- 2
-                wait for 10 ns;
-                addr2 <= std_logic_vector(to_unsigned(j*8+i+2*2, 6)); -- 4
-                wait for 10 ns;
-                addr2 <= std_logic_vector(to_unsigned(j*8+i+3*2, 6)); -- 6
-                wait for 10 ns;
-            end loop;
-
-            addr := addr + 3;
-        end loop;
-        
-        -- wait 6 clk cycles 
-        wait for 60 ns;
-        addr := 16;
-
-
-        -- Round 3 (Stage 5 and Stage 6)
-        for i in 0 to 7 loop
-            -- twiddle factor addresses
-            addr_00 <= std_logic_vector(to_unsigned(addr, 7));
-            addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
-            addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
-
-            -- Reading from memory
-            addr2 <= std_logic_vector(to_unsigned(i*4, 6)); -- 0
-            wait for 10 ns;
-            addr2 <= std_logic_vector(to_unsigned(i*4+1*1, 6)); -- 1
-            wait for 10 ns;
-            addr2 <= std_logic_vector(to_unsigned(i*4+2*1, 6)); -- 2
-            wait for 10 ns;
-            addr2 <= std_logic_vector(to_unsigned(i*4+3*1, 6)); -- 3
-            wait for 10 ns;
-
-            addr := addr + 3;
-        end loop;
-
-        -- wait 6 clk cycles 
-        wait for 60 ns;
-        addr := 32;
-
-        -- Round 4 (Stage 7)
-        mode <= "00001010"; -- Odd stage
-
-        for i in 0 to 31 loop
-            -- twiddle factor addresses
-            addr_00 <= std_logic_vector(to_unsigned(0, 7));
-            addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
-            addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
-
-            -- Reading from memory
-            addr2 <= std_logic_vector(to_unsigned(i, 6));
-            wait for 10 ns;
-
-            addr := addr + 2;
-        end loop;
-
-        -- wait for 6 clk cycles
-        wait for 60 ns;
+        -- test case 1
+        addr_00 <= std_logic_vector(to_unsigned(addr, 7));
+        addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
+        addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
+        addr2 <= std_logic_vector(to_unsigned(0, 6));
+        wait for 140 ns;
 
         wait;
+
+        -- -- Round 1 (Stage 1 and Stage 2)
+        -- for i in 0 to 7 loop
+        --     -- twiddle factor addresses
+        --     addr_00 <= std_logic_vector(to_unsigned(addr, 7));
+        --     addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
+        --     addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
+
+        --     -- Reading from memory
+        --     addr2 <= std_logic_vector(to_unsigned(i, 6)); -- 0
+        --     wait for 10 ns;
+        --     addr2 <= std_logic_vector(to_unsigned(i+1*8, 6)); -- 8
+        --     wait for 10 ns;
+        --     addr2 <= std_logic_vector(to_unsigned(i+2*8, 6)); -- 16
+        --     wait for 10 ns;
+        --     addr2 <= std_logic_vector(to_unsigned(i+3*8, 6)); -- 24
+        --     wait for 10 ns;
+        -- end loop;
+
+        -- -- wait 6 clk cycles 
+        -- wait for 60 ns;
+        -- addr := 4;
+
+        -- -- Round 2 (Stage 3 and Stage 4)
+        -- for j in 0 to 3 loop
+        --     -- twiddle factor addresses
+        --     addr_00 <= std_logic_vector(to_unsigned(addr, 7));
+        --     addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
+        --     addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
+
+        --     for i in 0 to 1 loop
+        --         -- Reading from memory
+        --         addr2 <= std_logic_vector(to_unsigned(j*8+i, 6)); -- 0
+        --         wait for 10 ns;
+        --         addr2 <= std_logic_vector(to_unsigned(j*8+i+1*2, 6)); -- 2
+        --         wait for 10 ns;
+        --         addr2 <= std_logic_vector(to_unsigned(j*8+i+2*2, 6)); -- 4
+        --         wait for 10 ns;
+        --         addr2 <= std_logic_vector(to_unsigned(j*8+i+3*2, 6)); -- 6
+        --         wait for 10 ns;
+        --     end loop;
+
+        --     addr := addr + 3;
+        -- end loop;
+        
+        -- -- wait 6 clk cycles 
+        -- wait for 60 ns;
+        -- addr := 16;
+
+
+        -- -- Round 3 (Stage 5 and Stage 6)
+        -- for i in 0 to 7 loop
+        --     -- twiddle factor addresses
+        --     addr_00 <= std_logic_vector(to_unsigned(addr, 7));
+        --     addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
+        --     addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
+
+        --     -- Reading from memory
+        --     addr2 <= std_logic_vector(to_unsigned(i*4, 6)); -- 0
+        --     wait for 10 ns;
+        --     addr2 <= std_logic_vector(to_unsigned(i*4+1*1, 6)); -- 1
+        --     wait for 10 ns;
+        --     addr2 <= std_logic_vector(to_unsigned(i*4+2*1, 6)); -- 2
+        --     wait for 10 ns;
+        --     addr2 <= std_logic_vector(to_unsigned(i*4+3*1, 6)); -- 3
+        --     wait for 10 ns;
+
+        --     addr := addr + 3;
+        -- end loop;
+
+        -- -- wait 6 clk cycles 
+        -- wait for 60 ns;
+        -- addr := 32;
+
+        -- -- Round 4 (Stage 7)
+        -- mode <= "00001010"; -- Odd stage
+
+        -- for i in 0 to 31 loop
+        --     -- twiddle factor addresses
+        --     addr_00 <= std_logic_vector(to_unsigned(0, 7));
+        --     addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
+        --     addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
+
+        --     -- Reading from memory
+        --     addr2 <= std_logic_vector(to_unsigned(i, 6));
+        --     wait for 10 ns;
+
+        --     addr := addr + 2;
+        -- end loop;
+
+        -- -- wait for 6 clk cycles
+        -- wait for 60 ns;
+
+        -- wait;
 
     end process;
     
@@ -339,4 +362,9 @@ begin
     val2 <= data_out(23 downto 12);
     val3 <= data_out(35 downto 24);
     val4 <= data_out(47 downto 36);
+
+    bval1 <= BF_out(11 downto 0);
+    bval2 <= BF_out(23 downto 12);
+    bval3 <= BF_out(35 downto 24);
+    bval4 <= BF_out(47 downto 36);
 end testbench;

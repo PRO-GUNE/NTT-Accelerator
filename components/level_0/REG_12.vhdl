@@ -12,18 +12,16 @@ entity REG_12 is
 end entity REG_12;
 
 architecture behavioral of REG_12 is
-    signal reg : std_logic_vector(11 downto 0);
 begin
     process(clk)
     begin
         if rising_edge(clk) then
             if reset = '1' then
-                reg <= (others => '0');
+                data_out <= (others => '0');
             elsif enable = '1' then
-                reg <= data_in;
+                data_out <= data_in;
             end if;
         end if;
     end process;
 
-    data_out <= reg;
 end architecture behavioral;

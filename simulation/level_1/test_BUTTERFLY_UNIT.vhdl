@@ -11,6 +11,8 @@ architecture testbench of test_BUTTERFLY_UNIT is
         port (
             clk : in std_logic;
             mode : in std_logic_vector(1 downto 0);
+            reset : in std_logic;
+            enable : in std_logic;
             u_in : in std_logic_vector(11 downto 0);
             v_in : in std_logic_vector(11 downto 0);
             twiddle : in std_logic_vector(11 downto 0);
@@ -22,6 +24,8 @@ architecture testbench of test_BUTTERFLY_UNIT is
     -- Declare signals for testbench
     signal clk : std_logic := '0';
     signal mode : std_logic_vector(1 downto 0) := (others => '0');
+    signal reset : std_logic := '0';
+    signal enable : std_logic := '1';
     signal u_in : std_logic_vector(11 downto 0) := (others => '0');
     signal v_in : std_logic_vector(11 downto 0) := (others => '0');
     signal twiddle : std_logic_vector(11 downto 0) := (others => '0');
@@ -33,6 +37,8 @@ begin
     dut: BUTTERFLY_UNIT port map (
             clk => clk,
             mode => mode,
+            reset => reset,
+            enable => enable,
             u_in => u_in,
             v_in => v_in,
             twiddle => twiddle,
@@ -49,6 +55,12 @@ begin
 
     process
     begin
+        -- reset
+        reset <= '1';
+        wait for 10 ns;
+        reset <= '0';
+        wait for 10 ns;
+
         -- Test 1: All inputs and outputs set to '0'
         mode <= "10";
         u_in <= "000000000000";
@@ -84,21 +96,18 @@ begin
 
         -- Test 4: u +/- vw mode 
         mode <= "00";
-        u_in <= "000001000000"; -- 64
-        v_in <= "000011000000"; -- 192
         twiddle <= "101000001011"; -- 2571 (w^64 * k^-2 mod 3329)
-        wait for 40 ns;
-        assert u_out = "100110011101" report "Test 4 failed for u_out" severity error; -- 2461
-        assert v_out = "001111100100" report "Test 4 failed for v_out" severity error; -- 996
-
-        mode <= "00";
         u_in <= "000000000000"; -- 0
         v_in <= "000010000000"; -- 128
-        twiddle <= "101000001011"; -- 2571 (w^64 * k^-2 mod 3329)
-        wait for 40 ns;
-        assert u_out = "011000111110" report "Test 5 failed for u_out" severity error; -- 1598
-        assert v_out = "011011000011" report "Test 5 failed for v_out" severity error; -- 1731
-
+        wait for 10 ns;
+        u_in <= "000001000000"; -- 64
+        v_in <= "000011000000"; -- 192
+        wait for 20 ns; 
+        assert u_out = "011000111110" report "Test 4 failed for u_out" severity error; -- 1598
+        assert v_out = "011011000011" report "Test 4 failed for v_out" severity error; -- 1731
+        wait for 10 ns;
+        assert u_out = "100110011101" report "Test 5 failed for u_out" severity error; -- 2461
+        assert v_out = "001111100100" report "Test 5 failed for v_out" severity error; -- 996
 
         wait;
 
