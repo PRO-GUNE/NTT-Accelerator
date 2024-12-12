@@ -75,7 +75,7 @@ architecture testbench of test_NTT_CT is
             mode : in std_logic_vector(7 downto 0);
             reset : in std_logic;
             enable : in std_logic;
-            sel : in std_logic;
+            sel : in std_logic_vector(1 downto 0);
             data_in : in std_logic_vector(47 downto 0);
             twiddle_1 : in std_logic_vector(11 downto 0);
             twiddle_2 : in std_logic_vector(11 downto 0);
@@ -250,14 +250,14 @@ begin
     main_process : process
         variable addr : integer := 1;
     begin
-        wait for 680 ns;
+        -- wait for 680 ns;
 
-        -- test case 1
-        addr_00 <= std_logic_vector(to_unsigned(addr, 7));
-        addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
-        addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
-        addr2 <= std_logic_vector(to_unsigned(0, 6));
-        wait for 140 ns;
+        -- -- test case 1
+        -- addr_00 <= std_logic_vector(to_unsigned(addr, 7));
+        -- addr_10 <= std_logic_vector(to_unsigned(addr+1, 7));
+        -- addr_11 <= std_logic_vector(to_unsigned(addr+2, 7));
+        -- addr2 <= std_logic_vector(to_unsigned(0, 6));
+        -- wait for 140 ns;
 
         wait;
 

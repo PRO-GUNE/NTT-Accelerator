@@ -26,7 +26,7 @@ begin
     process begin
 
     -- Test 1: a = 0, b = 0
-    a <= "000000110010";
+    a <= "000000000000";
     b <= "000000000000";
     wait for 10 ns;
     assert sum = "000000000000" report "Test 1 failed" severity error;
