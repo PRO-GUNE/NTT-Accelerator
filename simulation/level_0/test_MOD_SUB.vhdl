@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity test_MOD_SUB is
 end entity test_MOD_SUB;
 
-architecture Behavioral of test_MOD_SUB is
+architecture testbench of test_MOD_SUB is
     component MOD_SUB is
         port (
             a : in std_logic_vector(11 downto 0);
@@ -34,20 +34,38 @@ begin
     wait for 10 ns;
     assert diff = "000000000000" report "Test case 1 failed" severity error;
 
-    -- Test case 2: a = 100, b = 50
-    a <= "000000110010";
-    b <= "000000011001";
+    -- Test case 2: a = 100, b = 50 -> 50
+    a <= "000001100100";
+    b <= "000000110010";
     wait for 10 ns;
-    assert diff = "000000011001" report "Test case 2 failed" severity error;
+    assert diff = "000000110010" report "Test case 2 failed" severity error;
 
-    -- Test case 3: a = 500, b = 1000
-    a <= "001111010100";
-    b <= "011111000100";
+    -- Test case 3: a = 500, b = 1000 -> 2829
+    a <= "000111110100";
+    b <= "001111101000";
     wait for 10 ns;
-    assert diff = "010000010100" report "Test case 3 failed" severity error;
+    assert diff = "101100001101" report "Test case 3 failed" severity error;
+
+    -- Test case 4: a = 3328, b = 0 -> 3328
+    a <= "110100000000";
+    b <= "000000000000";
+    wait for 10 ns;
+    assert diff = "110100000000" report "Test case 4 failed" severity error;
+
+    -- Test case 5: a = 0, b = 3328 -> 1
+    a <= "000000000000";
+    b <= "110100000000";
+    wait for 10 ns;
+    assert diff = "000000000001" report "Test case 5 failed" severity error;
+    
+    -- Test case 6: a = 3276, b = 705 -> 2571
+    a <= "110011001100";
+    b <= "001011000001";
+    wait for 10 ns;
+    assert diff = "101000001011" report "Test case 6 failed" severity error;
 
     -- End simulation
     wait;
     end process;
     
-end architecture Behavioral;
+end architecture testbench;

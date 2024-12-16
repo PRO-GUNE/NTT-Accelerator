@@ -5,17 +5,17 @@ use ieee.numeric_std.all;
 entity test_MUL is
 end entity test_MUL;
 
-architecture Behavioral of test_MUL is
+architecture testbench of test_MUL is
     component MUL is
         port (
-            a : in  unsigned(11 downto 0);
-            b : in  unsigned(11 downto 0);
-            result : out unsigned(23 downto 0)
+            a : in std_logic_vector(11 downto 0);
+            b : in std_logic_vector(11 downto 0);
+            result : out std_logic_vector(23 downto 0)
         );
     end component MUL;
 
-    signal a_in, b_in : unsigned(11 downto 0);
-    signal result_out : unsigned(23 downto 0);
+    signal a_in, b_in : std_logic_vector(11 downto 0);
+    signal result_out : std_logic_vector(23 downto 0);
 
 begin
     UUT: MUL
@@ -34,32 +34,27 @@ begin
     wait for 10 ns;
     assert result_out = "000000000000000000000010" report "Test case 1 failed" severity error;
     
-    -- Test case 2: Multiplication of a positive and a negative number
-    a_in <= "000000000011"; -- 3
-    b_in <= "111111111110"; -- -2
-    wait for 10 ns;
-    assert result_out = "111111111111111111111100" report "Test case 2 failed" severity error;
 
-    -- Test case 3: Multiplication of two negative numbers
-    a_in <= "111111111111"; -- -1
-    b_in <= "111111111110"; -- -2
-    wait for 10 ns;
-    assert result_out = "000000000000000000000010" report "Test case 3 failed" severity error;
-
-
-    -- Test case 4: Multiplication of zero and a positive number
+    -- Test case 2: Multiplication of zero and a positive number
     a_in <= "000000000000"; -- 0
     b_in <= "000000000010"; -- 2
     wait for 10 ns;
-    assert result_out = "000000000000000000000000" report "Test case 4 failed" severity error;
+    assert result_out = "000000000000000000000000" report "Test case 2 failed" severity error;
 
 
-    -- Test case 5: Multiplication of zero and a negative number
-    a_in <= "000000000000"; -- 0
-    b_in <= "111111111110"; -- -2
+    -- Test case 3: Multiplication of two large positive numbers
+    a_in <= "011111111111"; -- 2047
+    b_in <= "011111111111"; -- 2047
     wait for 10 ns;
-    assert result_out = "000000000000000000000000" report "Test case 5 failed" severity error;
-    wait;
+    assert result_out = "001111111111000000000001" report "Test case 3 failed" severity error;
+    wait for 10 ns;
+
+    -- Test case 4: Multiplication of specific test case
+    a_in <= "101011011111"; -- 2783
+    b_in <= "000000010001"; -- 17
+    wait for 10 ns;
+    assert result_out = "000000001011100011001111" report "Test case 4 failed" severity error;
+    wait for 10 ns;
     end process;
 
-end architecture Behavioral;
+end architecture testbench;

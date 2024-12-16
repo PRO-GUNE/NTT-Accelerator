@@ -14,12 +14,12 @@ architecture behavioral of MOD_ADD is
 begin
     process(a, b)
         constant MODULO : natural := 3329;
-        variable temp_sum : unsigned(11 downto 0);
+        variable temp_sum : integer;
     begin
-        temp_sum := unsigned(a) + unsigned(b);
+        temp_sum := to_integer(unsigned(a)) + to_integer(unsigned(b));
         if temp_sum >= MODULO then
             temp_sum := temp_sum - MODULO;
         end if;
-        sum <= std_logic_vector(temp_sum);
+        sum <= std_logic_vector(to_unsigned(temp_sum, 12));
     end process;
 end architecture behavioral;

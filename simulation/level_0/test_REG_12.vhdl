@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity test_REG_12 is
 end entity test_REG_12;
 
-architecture test_behavioral of test_REG_12 is
+architecture testbench of test_REG_12 is
     -- Component declaration
     component REG_12
         port (
@@ -37,43 +37,49 @@ begin
     -- Clock process
     process
     begin
-        while true loop
-            clk <= not clk;
-            wait for 5 ns;
-        end loop;
+        clk <= not clk;
+        wait for 5 ns;
     end process;
 
     -- Test cases
-    -- Test case 1: Reset
     process
     begin
+        -- Test case 1: Reset
         reset <= '1';
         wait for 10 ns;
         reset <= '0';
-        wait for 20 ns;
-        assert data_out = (others => '0') report "Test case 1 failed" severity error;
-        wait;
-    end process;
+        wait for 10 ns;
+        assert data_out = "000000000000" report "Test case 1 failed" severity error;
 
-    -- Test case 2: Enable
-    process
-    begin
+        -- Test case 2: Enable
         enable <= '1';
         wait for 10 ns;
         data_in <= "101010101010";
-        wait for 20 ns;
+        wait for 10 ns;
         assert data_out = "101010101010" report "Test case 2 failed" severity error;
-        wait;
-    end process;
 
-    -- Test case 3: No Reset, No Enable
-    process
-    begin
+        -- Test case 3: No Reset, No Enable
         wait for 10 ns;
         data_in <= "111100001111";
-        wait for 20 ns;
+        wait for 10 ns;
         assert data_out = "111100001111" report "Test case 3 failed" severity error;
+
+        -- Test case 4: No Enable, Sending in value
+        enable <= '0';
+        wait for 10 ns;
+        data_in <= "101010101010";
+        wait for 10 ns;
+        assert data_out = "111100001111" report "Test case 4 failed" severity error;
+
+        -- Test case 5: Reset after setting value
+        reset <= '1';
+        wait for 10 ns;
+        reset <= '0';
+        wait for 10 ns;
+        assert data_out = "000000000000" report "Test case 5 failed" severity error;
+
         wait;
+
     end process;
 
-end architecture test_behavioral;
+end architecture testbench;

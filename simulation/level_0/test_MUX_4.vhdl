@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity test_MUX_4 is
 end test_MUX_4;
 
-architecture Behavioral of test_MUX_4 is
+architecture testbench of test_MUX_4 is
     component MUX_4 is
         port (
             sel : in std_logic_vector(1 downto 0);
@@ -72,16 +72,7 @@ begin
     wait for 10 ns;
     assert c_out = "101010101010" report "Test 4 failed" severity error;
 
-    -- Test 5: Select invalid input
-    sel <= "10";
-    in0 <= "010101010101";
-    in1 <= "000000000000";
-    in2 <= "111111111111";
-    in3 <= "101010101010";
-    wait for 10 ns;
-    assert c_out = (others => 'X') report "Test 5 failed" severity error;
-
     wait;
     end process;
 
-end architecture Behavioral;
+end architecture testbench;

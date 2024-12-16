@@ -14,12 +14,13 @@ architecture behavioral of MOD_SUB is
 begin
     process(a, b)
         constant MODULO : natural := 3329;
-        variable temp_diff : unsigned(11 downto 0);
+        variable temp_diff : integer;
     begin
-        temp_diff := unsigned(a) - unsigned(b);
+
+        temp_diff := to_integer(unsigned(a)) - to_integer(unsigned(b));
         if temp_diff < 0 then
-            temp_diff := MODULO - temp_diff;
+            temp_diff := temp_diff + MODULO;
         end if;
-        diff <= std_logic_vector(temp_diff);
+        diff <= std_logic_vector(to_unsigned(temp_diff, 12));
     end process;
 end architecture behavioral;
