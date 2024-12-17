@@ -50,4 +50,17 @@ This file includes the validation simulation tests run, to be run and any bugs t
 - [x] NTT_CORE
 
 ## Bug Reports
-- None
+- Overall components, memory inconsistency with RAM constructed by IP generator to interface accelerator with a micro processor. 
+- [x] REG_16
+- [x] MUX_2
+- [x] MUX_3
+- [x] MUX_4
+- [x] Twiddle ROM
+- [x] MUL
+- [x] MOD_K2_RED
+- [x] MOD_ADD
+- [x] MOD_SUB
+- [x] Buffer_N
+- [x] Butterfly Unit
+- [x] Butterfly Core
+- [x] SIPO Butterfly Unit

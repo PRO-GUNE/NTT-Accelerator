@@ -8,11 +8,11 @@ entity BUTTERFLY_UNIT is
         mode : in std_logic_vector(1 downto 0);
         reset : in std_logic;
         enable : in std_logic;
-        u_in : in std_logic_vector(11 downto 0);
-        v_in : in std_logic_vector(11 downto 0);
-        twiddle : in std_logic_vector(11 downto 0);
-        u_out : out std_logic_vector(11 downto 0);
-        v_out : out std_logic_vector(11 downto 0)
+        u_in : in std_logic_vector(15 downto 0);
+        v_in : in std_logic_vector(15 downto 0);
+        twiddle : in std_logic_vector(15 downto 0);
+        u_out : out std_logic_vector(15 downto 0);
+        v_out : out std_logic_vector(15 downto 0)
     );
 end entity BUTTERFLY_UNIT;
 
@@ -22,9 +22,9 @@ architecture Behavioral of BUTTERFLY_UNIT is
     component MUX_2
         port (
             sel : in std_logic;
-            in0 : in std_logic_vector(11 downto 0);
-            in1 : in std_logic_vector(11 downto 0);
-            c_out : out std_logic_vector(11 downto 0)
+            in0 : in std_logic_vector(15 downto 0);
+            in1 : in std_logic_vector(15 downto 0);
+            c_out : out std_logic_vector(15 downto 0)
         );
     end component MUX_2;
 
@@ -32,39 +32,39 @@ architecture Behavioral of BUTTERFLY_UNIT is
     component MUX_3
         port (
             sel : in std_logic_vector(1 downto 0);
-            in0 : in std_logic_vector(11 downto 0);
-            in1 : in std_logic_vector(11 downto 0);
-            in2 : in std_logic_vector(11 downto 0);
-            c_out : out std_logic_vector(11 downto 0)
+            in0 : in std_logic_vector(15 downto 0);
+            in1 : in std_logic_vector(15 downto 0);
+            in2 : in std_logic_vector(15 downto 0);
+            c_out : out std_logic_vector(15 downto 0)
         );
     end component MUX_3;
 
     -- register 12 bits
-    component REG_12
+    component REG_16
         port (
             clk : in std_logic;
             reset : in std_logic;
             enable : in std_logic;
-            data_in : in std_logic_vector(11 downto 0);
-            data_out : out std_logic_vector(11 downto 0)
+            data_in : in std_logic_vector(15 downto 0);
+            data_out : out std_logic_vector(15 downto 0)
         );
-    end component REG_12;
+    end component REG_16;
 
     -- modular addition
     component MOD_ADD
         port (
-            a : in std_logic_vector(11 downto 0);
-            b : in std_logic_vector(11 downto 0);
-            sum : out std_logic_vector(11 downto 0)
+            a : in std_logic_vector(15 downto 0);
+            b : in std_logic_vector(15 downto 0);
+            sum : out std_logic_vector(15 downto 0)
         );
     end component MOD_ADD;
 
     -- modular addition
     component MOD_SUB
         port (
-            a : in std_logic_vector(11 downto 0);
-            b : in std_logic_vector(11 downto 0);
-            diff : out std_logic_vector(11 downto 0)
+            a : in std_logic_vector(15 downto 0);
+            b : in std_logic_vector(15 downto 0);
+            diff : out std_logic_vector(15 downto 0)
         );
     end component MOD_SUB;
 
@@ -72,29 +72,29 @@ architecture Behavioral of BUTTERFLY_UNIT is
     component MOD_K2_RED
         port (
             c_in : in std_logic_vector(23 downto 0);
-            c_out : out std_logic_vector(11 downto 0)
+            c_out : out std_logic_vector(15 downto 0)
         );
     end component MOD_K2_RED;
 
     -- multiplication component
     component MUL
         port (
-            a : in std_logic_vector(11 downto 0);
-            b : in std_logic_vector(11 downto 0);
+            a : in std_logic_vector(15 downto 0);
+            b : in std_logic_vector(15 downto 0);
             result : out std_logic_vector(23 downto 0)
         );
     end component MUL;
 
-    signal reg_u1_out, reg_u2_out, reg_u3_out, reg_u4_out : std_logic_vector(11 downto 0);
-    signal reg_v1_out, reg_v2_out, reg_v3_out, reg_v4_out : std_logic_vector(11 downto 0);
-    signal reg_twiddle_out : std_logic_vector(11 downto 0);
-    signal mux_u1_out, mux_v1_out, mux_twiddle_out, mux_vu1_out, mux_vsub_out : std_logic_vector(11 downto 0);
-    signal mod_k2_red_out, mod_sub_out, mod_add_out : std_logic_vector(11 downto 0);
+    signal reg_u1_out, reg_u2_out, reg_u3_out, reg_u4_out, reg_uCT_out : std_logic_vector(15 downto 0);
+    signal reg_v1_out, reg_v2_out, reg_v3_out, reg_v4_out, reg_vCT_out : std_logic_vector(15 downto 0);
+    signal reg_twiddle_out : std_logic_vector(15 downto 0);
+    signal mux_u1_out, mux_v1_out, mux_twiddle_out, mux_vu1_out, mux_vsub_out : std_logic_vector(15 downto 0);
+    signal mod_k2_red_out, mod_sub_out, mod_add_out : std_logic_vector(15 downto 0);
     signal mod_mul_out : std_logic_vector(23 downto 0);
 
 begin
     -- register u1
-    reg_u1: REG_12 port map (
+    reg_u1: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -103,7 +103,7 @@ begin
         );
 
     -- register u2
-    reg_u2: REG_12 port map (
+    reg_u2: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -112,7 +112,7 @@ begin
         );
 
     -- register u3
-    reg_u3: REG_12 port map (
+    reg_u3: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -121,7 +121,7 @@ begin
         );
 
     -- register v1
-    reg_v1: REG_12 port map (
+    reg_v1: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -130,7 +130,7 @@ begin
         );
 
     -- register v2
-    reg_v2: REG_12 port map (
+    reg_v2: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -139,7 +139,7 @@ begin
         );
 
     -- register v3
-    reg_v3: REG_12 port map (
+    reg_v3: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -148,7 +148,7 @@ begin
         );
 
     -- register u4
-    reg_u4: REG_12 port map (
+    reg_u4: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -156,8 +156,17 @@ begin
             data_out => reg_u4_out
         );
 
+    -- register u_CT
+    reg_uCT: REG_16 port map (
+            clk => clk,
+            reset => reset,
+            enable => enable,
+            data_in => mod_add_out,
+            data_out => reg_uCT_out
+        );
+
     -- register v4
-    reg_v4: REG_12 port map (
+    reg_v4: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -165,8 +174,17 @@ begin
             data_out => reg_v4_out
         );
 
+    -- register vCT
+    reg_vCT: REG_16 port map (
+            clk => clk,
+            reset => reset,
+            enable => enable,
+            data_in => mod_sub_out,
+            data_out => reg_vCT_out
+        );
+
     -- twiddle factor register
-    reg_twiddle: REG_12 port map (
+    reg_twiddle: REG_16 port map (
             clk => clk,
             reset => reset,
             enable => enable,
@@ -243,7 +261,7 @@ begin
     -- mux u out
     mux_3_u_out: MUX_3 port map (
             sel => mode,
-            in0 => mod_add_out,
+            in0 => reg_uCT_out,
             in1 => mod_add_out,
             in2 => reg_u4_out,
             c_out => u_out
@@ -252,7 +270,7 @@ begin
     -- mux v out
     mux_3_v_out: MUX_3 port map (
             sel => mode,
-            in0 => mod_sub_out,
+            in0 => reg_vCT_out,
             in1 => mod_k2_red_out,
             in2 => reg_v4_out,
             c_out => v_out

@@ -7,17 +7,17 @@ entity BUTTERFLY_CORE is
         mode : in std_logic_vector(7 downto 0);
         reset : in std_logic;
         enable : in std_logic;
-        u1_in : in std_logic_vector(11 downto 0);
-        u2_in : in std_logic_vector(11 downto 0);
-        v1_in : in std_logic_vector(11 downto 0);
-        v2_in : in std_logic_vector(11 downto 0);
-        twiddle_1 : in std_logic_vector(11 downto 0);
-        twiddle_2 : in std_logic_vector(11 downto 0);
-        twiddle_3 : in std_logic_vector(11 downto 0);
-        u1_out : out std_logic_vector(11 downto 0);
-        u2_out : out std_logic_vector(11 downto 0);
-        v1_out : out std_logic_vector(11 downto 0);
-        v2_out : out std_logic_vector(11 downto 0)
+        u1_in : in std_logic_vector(15 downto 0);
+        u2_in : in std_logic_vector(15 downto 0);
+        v1_in : in std_logic_vector(15 downto 0);
+        v2_in : in std_logic_vector(15 downto 0);
+        twiddle_1 : in std_logic_vector(15 downto 0);
+        twiddle_2 : in std_logic_vector(15 downto 0);
+        twiddle_3 : in std_logic_vector(15 downto 0);
+        u1_out : out std_logic_vector(15 downto 0);
+        u2_out : out std_logic_vector(15 downto 0);
+        v1_out : out std_logic_vector(15 downto 0);
+        v2_out : out std_logic_vector(15 downto 0)
     ) ;
 end BUTTERFLY_CORE;
 
@@ -28,16 +28,16 @@ architecture Behavioral of BUTTERFLY_CORE is
             mode : in std_logic_vector(1 downto 0);
             reset : in std_logic;
             enable : in std_logic;
-            u_in : in std_logic_vector(11 downto 0);
-            v_in : in std_logic_vector(11 downto 0);
-            twiddle : in std_logic_vector(11 downto 0);
-            u_out : out std_logic_vector(11 downto 0);
-            v_out : out std_logic_vector(11 downto 0)
+            u_in : in std_logic_vector(15 downto 0);
+            v_in : in std_logic_vector(15 downto 0);
+            twiddle : in std_logic_vector(15 downto 0);
+            u_out : out std_logic_vector(15 downto 0);
+            v_out : out std_logic_vector(15 downto 0)
         );
     end component BUTTERFLY_UNIT;
 
-    signal u1_mid, u2_mid : std_logic_vector(11 downto 0);
-    signal v1_mid, v2_mid : std_logic_vector(11 downto 0);
+    signal u1_mid, u2_mid : std_logic_vector(15 downto 0);
+    signal v1_mid, v2_mid : std_logic_vector(15 downto 0);
 
 begin
     BUT_0: BUTTERFLY_UNIT port map (

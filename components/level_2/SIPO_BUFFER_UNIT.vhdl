@@ -9,11 +9,11 @@ entity SIPO_BUFFER_UNIT is
         reset : in std_logic;
         enable : in std_logic;
         sel : in std_logic_vector(1 downto 0);
-        data_in_0 : in std_logic_vector(11 downto 0);
-        data_in_1 : in std_logic_vector(11 downto 0);
-        data_in_2 : in std_logic_vector(11 downto 0);
-        data_in_3 : in std_logic_vector(11 downto 0);
-        data_out : out std_logic_vector(47 downto 0)
+        data_in_0 : in std_logic_vector(15 downto 0);
+        data_in_1 : in std_logic_vector(15 downto 0);
+        data_in_2 : in std_logic_vector(15 downto 0);
+        data_in_3 : in std_logic_vector(15 downto 0);
+        data_out : out std_logic_vector(63 downto 0)
     );
 end entity SIPO_BUFFER_UNIT;
 
@@ -27,23 +27,23 @@ architecture behavioral of SIPO_BUFFER_UNIT is
             clk : in std_logic;
             reset : in std_logic;
             enable : in std_logic;
-            data_in : in std_logic_vector(11 downto 0);
-            data_out : out std_logic_vector(47 downto 0)
+            data_in : in std_logic_vector(15 downto 0);
+            data_out : out std_logic_vector(63 downto 0)
         );
     end component BUFFER_N;
 
     component MUX_4 is
         port (
             sel : in std_logic_vector(1 downto 0);
-            in0 : in std_logic_vector(47 downto 0);
-            in1 : in std_logic_vector(47 downto 0);
-            in2 : in std_logic_vector(47 downto 0);
-            in3 : in std_logic_vector(47 downto 0);
-            c_out : out std_logic_vector(47 downto 0)
+            in0 : in std_logic_vector(63 downto 0);
+            in1 : in std_logic_vector(63 downto 0);
+            in2 : in std_logic_vector(63 downto 0);
+            in3 : in std_logic_vector(63 downto 0);
+            c_out : out std_logic_vector(63 downto 0)
         );
     end component MUX_4;
     -- Declare the signals used
-    signal buf_out_0, buf_out_1, buf_out_2, buf_out_3 : std_logic_vector(47 downto 0); 
+    signal buf_out_0, buf_out_1, buf_out_2, buf_out_3 : std_logic_vector(63 downto 0); 
 
 begin
     -- Instantiate 4 buffers

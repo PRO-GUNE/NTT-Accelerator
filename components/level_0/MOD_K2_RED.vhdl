@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity MOD_K2_RED is
     port (
         c_in : in std_logic_vector(23 downto 0);
-        c_out : out std_logic_vector(11 downto 0)
+        c_out : out std_logic_vector(15 downto 0)
     );
 end entity MOD_K2_RED;
 
@@ -33,7 +33,7 @@ begin
         c2 := to_unsigned(c2_val, 12);
         c2_test <= c2;
         
-        c_out <= std_logic_vector(c2);
+        c_out <= std_logic_vector(resize(c2, 16));
         
     end process;
 end architecture behavioral;

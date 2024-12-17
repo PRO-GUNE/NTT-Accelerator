@@ -5,7 +5,7 @@ entity test_MUX_2_RAM is
 end entity test_MUX_2_RAM;
 
 architecture testbench of test_MUX_2_RAM is
-    constant DATA_SIZE : integer := 48;
+    constant DATA_SIZE : integer := 64;
     
     signal sel : std_logic;
     signal in0 : std_logic_vector(DATA_SIZE-1 downto 0);
@@ -28,20 +28,16 @@ begin
     begin
         -- Test case 1
         sel <= '0';
-        in0 <= "010101010101010101010101010101010101010101010101";
-        in1 <= "111111111111111111111111111111111111111111111111";
+        in0 <= "0101010101010101010101010101010101010101010101010101010101010101";
+        in1 <= "1111111111111111111111111111111111111111111111111111111111111111";
         wait for 10 ns;
         assert c_out = in0 report "Test case 1 failed" severity error;
 
         -- Test case 2
         sel <= '1';
-        in0 <= "010101010101010101010101010101010101010101010101";
-        in1 <= "111111111111111111111111111111111111111111111111";
         wait for 10 ns;
         assert c_out = in1 report "Test case 2 failed" severity error;
         wait;
     end process;
-    
-    -- Add more test cases here
     
 end architecture testbench;

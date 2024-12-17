@@ -5,7 +5,7 @@ use ieee.std_logic_1164.all;
 entity NTT_RAM is
     generic (
         ADDR_SIZE : integer := 5;
-        DATA_SIZE : integer := 48
+        DATA_SIZE : integer := 64
     );
     port (
         clk       : in  std_logic;
@@ -25,7 +25,7 @@ architecture behavioral of NTT_RAM is
     component DUAL_PORT_RAM is
         generic (
             ADDR_SIZE : integer := 5;
-            DATA_SIZE : integer := 48
+            DATA_SIZE : integer := 64
         );
         port (
             clk       : in  std_logic;
@@ -41,7 +41,7 @@ architecture behavioral of NTT_RAM is
 
     component MUX_2_RAM is
         generic (
-            DATA_SIZE : integer := 48
+            DATA_SIZE : integer := 64
         );
         port (
             sel : in std_logic;

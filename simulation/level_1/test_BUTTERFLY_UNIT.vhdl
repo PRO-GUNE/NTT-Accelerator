@@ -13,11 +13,11 @@ architecture testbench of test_BUTTERFLY_UNIT is
             mode : in std_logic_vector(1 downto 0);
             reset : in std_logic;
             enable : in std_logic;
-            u_in : in std_logic_vector(11 downto 0);
-            v_in : in std_logic_vector(11 downto 0);
-            twiddle : in std_logic_vector(11 downto 0);
-            u_out : out std_logic_vector(11 downto 0);
-            v_out : out std_logic_vector(11 downto 0)
+            u_in : in std_logic_vector(15 downto 0);
+            v_in : in std_logic_vector(15 downto 0);
+            twiddle : in std_logic_vector(15 downto 0);
+            u_out : out std_logic_vector(15 downto 0);
+            v_out : out std_logic_vector(15 downto 0)
         );
     end component BUTTERFLY_UNIT;
 
@@ -26,11 +26,11 @@ architecture testbench of test_BUTTERFLY_UNIT is
     signal mode : std_logic_vector(1 downto 0) := (others => '0');
     signal reset : std_logic := '0';
     signal enable : std_logic := '1';
-    signal u_in : std_logic_vector(11 downto 0) := (others => '0');
-    signal v_in : std_logic_vector(11 downto 0) := (others => '0');
-    signal twiddle : std_logic_vector(11 downto 0) := (others => '0');
-    signal u_out : std_logic_vector(11 downto 0);
-    signal v_out : std_logic_vector(11 downto 0);
+    signal u_in : std_logic_vector(15 downto 0) := (others => '0');
+    signal v_in : std_logic_vector(15 downto 0) := (others => '0');
+    signal twiddle : std_logic_vector(15 downto 0) := (others => '0');
+    signal u_out : std_logic_vector(15 downto 0);
+    signal v_out : std_logic_vector(15 downto 0);
 
 begin
     -- Instantiate the BUTTERFLY_UNIT module
@@ -63,51 +63,51 @@ begin
 
         -- Test 1: All inputs and outputs set to '0'
         mode <= "10";
-        u_in <= "000000000000";
-        v_in <= "000000000000";
-        twiddle <= "000000000000";
+        u_in <= "0000000000000000";
+        v_in <= "0000000000000000";
+        twiddle <= "0000000000000000";
         wait for 10 ns;
-        u_in <= "000000000001";
-        v_in <= "000000000001";
+        u_in <= "0000000000000001";
+        v_in <= "0000000000000001";
         wait for 10 ns;
-        u_in <= "000000000010";
-        v_in <= "000000000010";
+        u_in <= "0000000000000010";
+        v_in <= "0000000000000010";
         wait for 20 ns;
-        assert u_out = "000000000000" report "Test 1 failed for u_out" severity error;
-        assert v_out = "000000000000" report "Test 1 failed for v_out" severity error;
+        assert u_out = "0000000000000000" report "Test 1 failed for u_out" severity error;
+        assert v_out = "0000000000000000" report "Test 1 failed for v_out" severity error;
 
         -- Test 2: u/v mode
         mode <= "10";
-        u_in <= "110011001100";
-        v_in <= "101011011111";
-        twiddle <= "000000000001";
+        u_in <= "0000110011001100";
+        v_in <= "0000101011011111";
+        twiddle <= "0000000000000001";
         wait for 40 ns;
-        assert u_out = "110011001100" report "Test 2 failed for u_out" severity error;
-        assert v_out = "101011011111" report "Test 2 failed for v_out" severity error;
+        assert u_out = "0000110011001100" report "Test 2 failed for u_out" severity error;
+        assert v_out = "0000101011011111" report "Test 2 failed for v_out" severity error;
 
         -- Test 3: Add/Sub mode
         mode <= "01";
-        u_in <= "000001000000"; -- 64
-        v_in <= "000011000000"; -- 192
-        twiddle <= "100011101101"; -- 2285 (w^0 * k^-2 mod 3329)
+        u_in <= "0000000001000000"; -- 64
+        v_in <= "0000000011000000"; -- 192
+        twiddle <= "0000100011101101"; -- 2285 (w^0 * k^-2 mod 3329)
         wait for 40 ns;
-        assert u_out = "000100000000" report "Test 3 failed for u_out" severity error; -- 256
-        assert v_out = "110010000001" report "Test 3 failed for v_out" severity error; -- 3201
+        assert u_out = "0000000100000000" report "Test 3 failed for u_out" severity error; -- 256
+        assert v_out = "0000110010000001" report "Test 3 failed for v_out" severity error; -- 3201
 
         -- Test 4: u +/- vw mode 
         mode <= "00";
-        twiddle <= "101000001011"; -- 2571 (w^64 * k^-2 mod 3329)
-        u_in <= "000000000000"; -- 0
-        v_in <= "000010000000"; -- 128
+        twiddle <= "0000101000001011"; -- 2571 (w^64 * k^-2 mod 3329)
+        u_in <= "0000000000000000"; -- 0
+        v_in <= "0000000010000000"; -- 128
         wait for 10 ns;
-        u_in <= "000001000000"; -- 64
-        v_in <= "000011000000"; -- 192
-        wait for 20 ns; 
-        assert u_out = "011000111110" report "Test 4 failed for u_out" severity error; -- 1598
-        assert v_out = "011011000011" report "Test 4 failed for v_out" severity error; -- 1731
-        wait for 10 ns;
-        assert u_out = "100110011101" report "Test 5 failed for u_out" severity error; -- 2461
-        assert v_out = "001111100100" report "Test 5 failed for v_out" severity error; -- 996
+        u_in <= "0000000001000000"; -- 64
+        v_in <= "0000000011000000"; -- 192
+        wait for 30 ns; 
+        assert u_out = "0000011000111110" report "Test 4 failed for u_out" severity error; -- 1598
+        assert v_out = "0000011011000011" report "Test 4 failed for v_out" severity error; -- 1731
+        wait for 20 ns;
+        assert u_out = "0000100110011101" report "Test 5 failed for u_out" severity error; -- 2461
+        assert v_out = "0000001111100100" report "Test 5 failed for v_out" severity error; -- 996
 
         wait;
 

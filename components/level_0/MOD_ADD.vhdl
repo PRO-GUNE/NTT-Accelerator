@@ -4,9 +4,9 @@ use ieee.numeric_std.all;
 
 entity MOD_ADD is
     port (
-        a : in std_logic_vector(11 downto 0);
-        b : in std_logic_vector(11 downto 0);
-        sum : out std_logic_vector(11 downto 0)
+        a : in std_logic_vector(15 downto 0);
+        b : in std_logic_vector(15 downto 0);
+        sum : out std_logic_vector(15 downto 0)
     );
 end entity MOD_ADD;
 
@@ -20,6 +20,6 @@ begin
         if temp_sum >= MODULO then
             temp_sum := temp_sum - MODULO;
         end if;
-        sum <= std_logic_vector(to_unsigned(temp_sum, 12));
+        sum <= std_logic_vector(to_unsigned(temp_sum, 16));
     end process;
 end architecture behavioral;

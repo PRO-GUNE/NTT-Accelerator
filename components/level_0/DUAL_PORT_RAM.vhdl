@@ -5,7 +5,7 @@ use ieee.std_logic_unsigned.all;
 entity DUAL_PORT_RAM is
     generic (
         ADDR_SIZE : integer := 5;
-        DATA_SIZE : integer := 48
+        DATA_SIZE : integer := 64
     );
     port (
         clk       : in  std_logic;

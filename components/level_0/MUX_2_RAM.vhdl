@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity MUX_2_RAM is
     generic (
-        DATA_SIZE : integer := 48
+        DATA_SIZE : integer := 64
     );
     port (
         sel : in std_logic;
