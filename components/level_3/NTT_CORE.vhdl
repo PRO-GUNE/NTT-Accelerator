@@ -11,9 +11,9 @@ entity NTT_CORE is
         enable : in std_logic;
         sel : in std_logic_vector(1 downto 0);
         data_in : in std_logic_vector(63 downto 0);
-        twiddle_1 : in std_logic_vector(15 downto 0);
-        twiddle_2 : in std_logic_vector(15 downto 0);
-        twiddle_3 : in std_logic_vector(15 downto 0);
+        addr_00 : in std_logic_vector(6 downto 0);
+        addr_10 : in std_logic_vector(6 downto 0);
+        addr_11 : in std_logic_vector(6 downto 0);
         BF_out : out std_logic_vector(63 downto 0)
     );
 end NTT_CORE;
@@ -27,6 +27,19 @@ architecture Behavioral of NTT_CORE is
             clk_out: out std_logic
         );
     end component CLK_DIVIDER;
+
+    component TWIDDLE_ROM is
+        port(
+            clk : in std_logic;
+            en : in std_logic;
+            addr_00 : in std_logic_vector(6 downto 0);
+            addr_10 : in std_logic_vector(6 downto 0);
+            addr_11 : in std_logic_vector(6 downto 0);
+            data_00 : out std_logic_vector(15 downto 0);
+            data_10 : out std_logic_vector(15 downto 0);
+            data_11 : out std_logic_vector(15 downto 0)
+        );
+    end component TWIDDLE_ROM;
 
     component BUTTERFLY_CORE is
         port (
@@ -64,6 +77,7 @@ architecture Behavioral of NTT_CORE is
 
     signal u1_out, u2_out, v1_out, v2_out : std_logic_vector(15 downto 0);
     signal clk_out : std_logic;
+    signal twiddle_1, twiddle_2, twiddle_3 : std_logic_vector(15 downto 0);
 
 begin
     -- Instantiate the BUTTERFLY_CORE
@@ -72,6 +86,18 @@ begin
             clk_in => clk,
             reset => reset,
             clk_out => clk_out
+        );
+
+    TW_ROM: TWIDDLE_ROM
+        port map(
+            clk => clk_out,
+            en => enable,
+            addr_00 => addr_00,
+            addr_10 => addr_10,
+            addr_11 => addr_11,
+            data_00 => twiddle_1,
+            data_10 => twiddle_2,
+            data_11 => twiddle_3
         );
      
     BUT_0: BUTTERFLY_CORE
