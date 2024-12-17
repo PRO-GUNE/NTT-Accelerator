@@ -1,12 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.system_types.all;
 
 -- Entity declaration
 entity NTT_RAM is
-    generic (
-        ADDR_SIZE : integer := 5;
-        DATA_SIZE : integer := 64
-    );
     port (
         clk       : in  std_logic;
         addr1     : in  std_logic_vector(ADDR_SIZE downto 0);
@@ -23,10 +20,6 @@ end NTT_RAM;
 architecture behavioral of NTT_RAM is
     -- Declare two instances of DUAL_PORT_RAM component
     component DUAL_PORT_RAM is
-        generic (
-            ADDR_SIZE : integer := 5;
-            DATA_SIZE : integer := 64
-        );
         port (
             clk       : in  std_logic;
             en1       : in std_logic;
@@ -70,10 +63,6 @@ begin
 
     -- Instantiate the two RAMs
     ram_coeff : DUAL_PORT_RAM
-        generic map (
-            ADDR_SIZE => ADDR_SIZE,
-            DATA_SIZE => DATA_SIZE
-        )
         port map (
             clk => clk,
             en1 => '1',
