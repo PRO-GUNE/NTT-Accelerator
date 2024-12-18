@@ -15,7 +15,7 @@ architecture behavioral of CLK_DIVIDER is
 begin
     process(clk_in)
         variable count : integer := 0;
-        constant MODULO : integer := 1000; -- = 1 for simulation
+        constant MODULO : integer := 100; -- = 1 for simulation
     begin
         if rising_edge(clk_in) then
             count := count + 1;

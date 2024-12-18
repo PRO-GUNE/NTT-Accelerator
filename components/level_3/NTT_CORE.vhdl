@@ -20,14 +20,6 @@ end NTT_CORE;
 
 -- Architecture definition
 architecture Behavioral of NTT_CORE is
-    component CLK_DIVIDER is
-        port(
-            clk_in : in std_logic;
-            reset : in std_logic;
-            clk_out: out std_logic
-        );
-    end component CLK_DIVIDER;
-
     component BUTTERFLY_CORE is
         port (
             clk : in std_logic;
@@ -63,20 +55,12 @@ architecture Behavioral of NTT_CORE is
     end component SIPO_BUFFER_UNIT;
 
     signal u1_out, u2_out, v1_out, v2_out : std_logic_vector(15 downto 0);
-    signal clk_out : std_logic;
 
 begin
     -- Instantiate the BUTTERFLY_CORE
-    CLK_0: CLK_DIVIDER
-        port map(
-            clk_in => clk,
-            reset => reset,
-            clk_out => clk_out
-        );
-     
     BUT_0: BUTTERFLY_CORE
         port map (
-            clk => clk_out,
+            clk => clk,
             mode => mode,
             reset => reset,
             enable => enable,
@@ -96,7 +80,7 @@ begin
     -- Instantiate the SIPO_BUFFER_UNIT
     PISO_BUF: SIPO_BUFFER_UNIT
         port map (
-            clk => clk_out,
+            clk => clk,
             reset => reset,
             enable => enable,
             sel => sel,
