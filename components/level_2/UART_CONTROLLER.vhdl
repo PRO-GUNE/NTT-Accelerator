@@ -3,9 +3,11 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 
-entity UART_controller is
+entity CONTROLLER is
     generic(
-        BUFFER_SIZE : integer := 6;
+        BUFFER_SIZE : integer := 7;
+        ADDR_SIZE : integer := 6;
+        DATA_SIZE : integer := 48;
         BAUD_DELAY : integer := 13020
     );
 
@@ -16,10 +18,10 @@ entity UART_controller is
         rx               : in  std_logic;
         tx               : out std_logic
         );
-end UART_controller;
+end CONTROLLER;
 
 
-architecture Behavioral of UART_controller is
+architecture Behavioral of CONTROLLER is
 
     component button_debounce
         port(
@@ -46,12 +48,29 @@ architecture Behavioral of UART_controller is
             );
     end component;
 
-    signal button_pressed, tx_start, rx_valid, new_data : std_logic;
+    component DUAL_PORT_RAM is
+        generic (
+            ADDR_SIZE : integer := 6;
+            DATA_SIZE : integer := 48
+        );
+        port (
+            clk       : in  std_logic;
+            en1       : in std_logic;
+            en2       : in std_logic;
+            addr1     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
+            addr2     : in  std_logic_vector(ADDR_SIZE-1 downto 0);
+            write_en  : in  std_logic;
+            data_in   : in  std_logic_vector(DATA_SIZE-1 downto 0);
+            data_out : out std_logic_vector(DATA_SIZE-1 downto 0)
+        );
+    end component DUAL_PORT_RAM;
+
+    signal button_pressed, tx_start, rx_valid : std_logic;
+    signal new_data : std_logic := '0';
     signal rx_data_out, tx_data_in : std_logic_vector (7 downto 0);
 
     -- Internal signals using std_logic_vector
-    signal data_buffer : std_logic_vector(8*BUFFER_SIZE-1 downto 0) := (others => '0');
-
+    signal data_buffer, result_buffer : std_logic_vector(8*BUFFER_SIZE-1 downto 0) := (others => '0');
     signal rx_count : integer range 0 to BUFFER_SIZE := 0;
     signal tx_count : integer range 0 to BUFFER_SIZE := 0;
 
@@ -61,7 +80,28 @@ architecture Behavioral of UART_controller is
     signal delay_counter : integer range 0 to BAUD_DELAY := 0;
     signal transmit_active : boolean := false;
 
+    -- Internal signals to connect RAM
+    signal addr1, addr2 : std_logic_vector(ADDR_SIZE-1 downto 0) := (others => '0');
+    signal ram_data_in, ram_data_out : std_logic_vector(DATA_SIZE-1 downto 0) := (others => '0');
+    signal write_en : std_logic := '1';
+    signal ram_port1_en, ram_port2_en : std_logic := '1';
+
 begin
+    ram : DUAL_PORT_RAM
+    generic map(
+        ADDR_SIZE => ADDR_SIZE,
+        DATA_SIZE => DATA_SIZE
+        )
+    port map(
+        clk => clk,
+        en1 => ram_port1_en,
+        en2 => ram_port2_en,
+        write_en => write_en,
+        addr1 => addr1,
+        addr2 => addr2,
+        data_in => ram_data_in,
+        data_out => ram_data_out
+        );
 
     tx_button_controller: button_debounce
     port map(
@@ -95,7 +135,11 @@ begin
                 current_state <= IDLE;
                 transmit_active <= false;
                 data_buffer <= (others => '0');
-                
+                new_data <= '0';
+                addr1 <= (others => '0');
+                addr2 <= (others => '0');
+                ram_data_in <= (others => '0');
+                result_buffer <= (others => '0');
             else
                 case current_state is
                     when IDLE => 
@@ -112,7 +156,8 @@ begin
                         data_buffer(8*(rx_count+1)-1 downto 8*rx_count) <= rx_data_out;
 
                         if rx_count = BUFFER_SIZE-1 then
-                            rx_count <= 0;
+                            rx_count <= 0;                            
+                            ram_data_in <= data_buffer(8*(BUFFER_SIZE-1)-1 downto 0);    -- read the value
                             current_state <= WAITING;
                         else
                             rx_count <= rx_count + 1;
@@ -123,6 +168,7 @@ begin
                     when WAITING =>
                         if button_pressed='1' then
                             tx_count <= 0;
+                            result_buffer(47 downto 0) <= ram_data_out;
                             current_state <= TRANSMITTING;
                             delay_counter <= 0;
                             transmit_active <= false;
@@ -131,7 +177,7 @@ begin
                     when TRANSMITTING =>
                         if not transmit_active then
                             -- Extract appropriate byte from 
-                            tx_data_in <= data_buffer(8*(tx_count+1)-1 downto 8*tx_count);
+                            tx_data_in <= result_buffer(8*(tx_count+1)-1 downto 8*tx_count);
                             tx_start <= '1';
                             transmit_active <= true;
                             delay_counter <= 0;
