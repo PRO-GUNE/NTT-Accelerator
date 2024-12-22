@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity PMC_CORE is
     generic (
         DATA_SIZE : integer := 48
-    )
+    );
     port(
         clk : in std_logic;
         reset : in std_logic;
@@ -17,4 +17,18 @@ entity PMC_CORE is
 end PMC_CORE;
 
 architecture Behavioral of PMC_CORE is
+    signal limit : integer := 100;
+    signal count : integer := 0;
+begin
+    process(clk)
+    begin
+        if rising_edge(clk) and proc_start = '1' then
+            if count > limit then
+                proc_done <= '1';
+            else
+                count <= count + 1;
+                proc_done <= '0';
+            end if;
+        end if;
+    end process;
 end Behavioral;
