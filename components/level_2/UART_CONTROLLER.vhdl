@@ -5,8 +5,8 @@ use ieee.numeric_std.all;
 
 entity CONTROLLER is
     generic(
-        BUFFER_SIZE : integer := 7;
-        ADDR_DEPTH : integer := 5;
+        BUFFER_SIZE : integer := 6;
+        ADDR_DEPTH : integer := 2;
         DATA_SIZE : integer := 48;
         BAUD_DELAY : integer := 13020
     );
@@ -23,16 +23,6 @@ end CONTROLLER;
 
 
 architecture Behavioral of CONTROLLER is
-
-    component button_debounce
-        port(
-            clk        : in  std_logic;
-            reset      : in  std_logic;
-            button_in  : in  std_logic;
-            button_out : out std_logic
-            );
-    end component;
-
 
     component UART
         port(
@@ -66,8 +56,24 @@ architecture Behavioral of CONTROLLER is
         );
     end component DUAL_PORT_RAM;
 
-    signal button_pressed, tx_start, rx_valid : std_logic;
-    signal new_data : std_logic := '0';
+    component PMC_CORE is
+        generic (
+            DATA_SIZE : integer := 48
+        );
+        port(
+            clk : in std_logic;
+            reset : in std_logic;
+            proc_start : in std_logic;
+            proc_done : out std_logic;
+            data_in : in std_logic_vector(DATA_SIZE-1 downto 0);
+            data_out : out std_logic_vector(DATA_SIZE-1 downto 0)
+        );
+    end component;
+    
+    -- Signals for the PMC core
+    signal proc_start, proc_done, proc_done_ack : std_logic := '0';
+
+    signal tx_start, rx_valid : std_logic;
     signal rx_data_out, tx_data_in : std_logic_vector (7 downto 0);
 
     -- Internal signals using std_logic_vector
@@ -76,7 +82,7 @@ architecture Behavioral of CONTROLLER is
     signal tx_count : integer range 0 to BUFFER_SIZE := 0;
     signal addr1, addr2 : integer range 0 to ADDR_DEPTH := 0;
 
-    type state_type is (IDLE, RECEIVING, WAITING, TRANSMITTING);
+    type state_type is (RECEIVING, WAITING, TRANSMITTING);
     signal current_state : state_type := RECEIVING;
     
     signal delay_counter : integer range 0 to BAUD_DELAY := 0;
@@ -86,6 +92,7 @@ architecture Behavioral of CONTROLLER is
     signal ram_data_in, ram_data_out : std_logic_vector(DATA_SIZE-1 downto 0) := (others => '0');
     signal write_en : std_logic := '1';
     signal ram_port1_en, ram_port2_en : std_logic := '1';
+    signal new_data : std_logic := '1';
 
 begin
     ram : DUAL_PORT_RAM
@@ -104,13 +111,18 @@ begin
         data_out => ram_data_out
         );
 
-    tx_button_controller: button_debounce
+    pmc : PMC_CORE
+    generic map(
+        DATA_SIZE => DATA_SIZE
+        )
     port map(
-            clk            => clk,
-            reset          => reset,
-            button_in      => tx_enable,
-            button_out     => button_pressed
-            );
+        clk => clk,
+        reset => reset,
+        proc_start => proc_start,
+        proc_done => proc_done,
+        data_in => ram_data_out,
+        data_out => ram_data_in
+        );
 
     UART_transceiver: UART
     port map(
@@ -133,61 +145,53 @@ begin
                 addr1 <= 0;
                 addr2 <= 0;
                 delay_counter <= 0;
-
-                new_data <= '1';
                 tx_start <= '0';
-
-                current_state <= IDLE;
+                current_state <= RECEIVING;
                 transmit_active <= false;
-                
                 data_buffer <= (others => '0');
-                new_data <= '0';
                 ram_data_in <= (others => '0');
                 result_buffer <= (others => '0');
             else
                 case current_state is
-                    when IDLE => 
-                        addr2 <= 0;
-                        tx_start <= '0';
-                        if rx_valid = '1' and new_data='1' then
-                            current_state <= RECEIVING;
-                        elsif rx_valid = '0' then
-                            new_data <= '1';
-                        end if;
-                        led(0) <= '1';
-                        led(15 downto 1) <= (others => '0');
 
                     when RECEIVING =>
                         tx_start <= '0';
-                        
-                        -- Store received byte in appropriate position within data_buffer
-                        data_buffer(8*(rx_count+1)-1 downto 8*rx_count) <= rx_data_out;
+                        proc_start <= '0';
+                        proc_done_ack <= '0';
 
-                        if rx_count = BUFFER_SIZE-1 then
-                            rx_count <= 0;                            
-                            addr1 <= addr1;
-                            ram_data_in <= data_buffer(8*(BUFFER_SIZE-1)-1 downto 0);    -- read the value
-
-                            if addr1 = ADDR_DEPTH - 1 then
-                                current_state <= WAITING;
-                                addr1 <= 0;
-                            else
-                                current_state <= IDLE;
-                                addr1 <= addr1 + 1;
-                            end if;
-                        else
-                            rx_count <= rx_count + 1;
+                        if rx_valid = '1' and new_data='1' then
+                            -- Store received byte in appropriate position within data_buffer
+                            data_buffer(8*(rx_count+1)-1 downto 8*rx_count) <= rx_data_out;
                             new_data <= '0';
-                            current_state <= IDLE;
+
+                            if rx_count = BUFFER_SIZE-1 then
+                                rx_count <= 0;                            
+                                ram_data_in <= data_buffer;    -- read the value
+
+                                if addr1 = ADDR_DEPTH - 1 then
+                                    current_state <= WAITING;
+                                    addr1 <= 0;
+                                    proc_start <= '1';
+                                else
+                                    addr1 <= addr1 + 1;
+                                end if;
+                            else
+                                rx_count <= rx_count + 1;
+                            end if;
+                        elsif rx_valid = '0' then
+                            new_data <= '1';
                         end if;
+                        
                         led(0) <= '0';
                         led(1) <= '1';
                         led(15 downto 2) <= (others => '0');
 
                     when WAITING =>
-                        if button_pressed='1' then
+                        if proc_done = '1' and proc_done_ack = '0' then
+                            result_buffer <= ram_data_out;
                             tx_count <= 0;
-                            result_buffer(47 downto 0) <= ram_data_out;
+                            proc_start <= '0';
+                            proc_done_ack <= '1';
                             current_state <= TRANSMITTING;
                             delay_counter <= 0;
                             transmit_active <= false;
@@ -208,10 +212,10 @@ begin
                             if delay_counter = BAUD_DELAY then
                                 if tx_count = BUFFER_SIZE-1 then
                                     if addr2 = ADDR_DEPTH-1 then
-                                        current_state <= IDLE;
-                                        addr1 <= 0;
+                                        current_state <= RECEIVING;
+                                        addr2 <= 0;
+                                        new_data <= '1';
                                     else
-                                        current_state <= WAITING;
                                         addr2 <= addr2 + 1;
                                     end if;
                                     tx_count <= 0;
@@ -233,5 +237,4 @@ begin
         end if;
     end process;
     
-
 end Behavioral;
