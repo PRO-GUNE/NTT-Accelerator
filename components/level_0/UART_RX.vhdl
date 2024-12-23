@@ -81,6 +81,7 @@ begin
                         when IDLE =>
                             rx_valid <= '0';
                             rx_stored_data <= (others => '0');    -- clean the received data register
+                            rx_data_out <= (others => '0');
                             bit_duration_count := 0;              -- reset counters
                             bit_count := 0;
 

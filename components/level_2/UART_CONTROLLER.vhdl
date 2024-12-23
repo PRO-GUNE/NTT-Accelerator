@@ -71,7 +71,7 @@ architecture Behavioral of CONTROLLER is
     end component;
     
     -- Signals for the PMC core
-    signal proc_start, proc_done, proc_done_ack : std_logic := '0';
+    signal proc_start, proc_done : std_logic := '0';
 
     signal tx_start, rx_valid : std_logic;
     signal rx_data_out, tx_data_in : std_logic_vector (7 downto 0);
@@ -157,7 +157,6 @@ begin
                     when RECEIVING =>
                         tx_start <= '0';
                         proc_start <= '0';
-                        proc_done_ack <= '0';
 
                         if rx_valid = '1' and new_data='1' then
                             -- Store received byte in appropriate position within data_buffer
@@ -187,11 +186,10 @@ begin
                         led(15 downto 2) <= (others => '0');
 
                     when WAITING =>
-                        if proc_done = '1' and proc_done_ack = '0' then
+                        if proc_done = '1' then
                             result_buffer <= ram_data_out;
                             tx_count <= 0;
                             proc_start <= '0';
-                            proc_done_ack <= '1';
                             current_state <= TRANSMITTING;
                             delay_counter <= 0;
                             transmit_active <= false;
