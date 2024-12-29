@@ -8,19 +8,30 @@ end entity test_MOD_K2_RED;
 architecture testbench of test_MOD_K2_RED is
     component MOD_K2_RED is
         port (
-            c_in : in std_logic_vector(23 downto 0);
-            c_out : out std_logic_vector(11 downto 0)
+            clk     : in std_logic;  
+            reset   : in std_logic;  
+            c_in    : in std_logic_vector(23 downto 0);
+            c_out   : out std_logic_vector(11 downto 0)
         );
     end component MOD_K2_RED;
-
+    
+    signal clk, reset : std_logic := '0';
     signal c_in : std_logic_vector(23 downto 0);
     signal c_out : std_logic_vector(11 downto 0);
 begin
     UUT: MOD_K2_RED
     port map (
+        clk => clk,
+        reset => reset,
         c_in => c_in,
         c_out => c_out
     );
+
+    clk_process : process
+    begin
+        clk <= not clk;
+        wait for 5 ns;
+    end process;
 
     process begin
     -- Test 1: All zeros

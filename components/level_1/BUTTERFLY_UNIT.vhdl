@@ -77,17 +77,21 @@ architecture Behavioral of BUTTERFLY_UNIT is
     -- reduction modulo k2-RED
     component MOD_K2_RED
         port (
-            c_in : in std_logic_vector(23 downto 0);
-            c_out : out std_logic_vector(11 downto 0)
+            clk     : in std_logic;  
+            reset   : in std_logic;  
+            c_in    : in std_logic_vector(23 downto 0);
+            c_out   : out std_logic_vector(11 downto 0)
         );
     end component MOD_K2_RED;
 
     -- multiplication component
     component MUL
         port (
-            a : in std_logic_vector(11 downto 0);
-            b : in std_logic_vector(11 downto 0);
-            result : out std_logic_vector(23 downto 0)
+            clk     : in  std_logic;
+            enable  : in  std_logic;                     
+            a       : in  std_logic_vector(11 downto 0);
+            b       : in  std_logic_vector(11 downto 0);
+            result  : out std_logic_vector(23 downto 0)
         );
     end component MUL;
 
@@ -231,6 +235,8 @@ begin
 
     -- multiplication
     mul_unit: MUL port map (
+            clk => clk,
+            enable => enable,
             a => mux_vsub_out,
             b => mux_twiddle_out,
             result => mod_mul_out
@@ -238,6 +244,8 @@ begin
 
     -- reduction modulo k2-RED
     mod_k2_red_unit: MOD_K2_RED port map (
+            clk => clk,
+            reset => reset,
             c_in => mod_mul_out,
             c_out => mod_k2_red_out
         );
