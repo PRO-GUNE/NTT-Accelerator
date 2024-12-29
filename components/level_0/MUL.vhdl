@@ -4,18 +4,37 @@ use ieee.numeric_std.all;
 
 entity MUL is
     port (
-        a : in std_logic_vector(11 downto 0);
-        b : in std_logic_vector(11 downto 0);
-        result : out std_logic_vector(23 downto 0)
+        clk     : in  std_logic;                      -- Added clock for M register
+        a       : in  std_logic_vector(11 downto 0);
+        b       : in  std_logic_vector(11 downto 0);
+        result  : out std_logic_vector(23 downto 0)
     );
 end entity MUL;
 
 architecture rtl of MUL is
+    -- Attribute to ensure DSP inference
+    attribute use_dsp : string;
+    attribute use_dsp of rtl : architecture is "yes";
+    
+    -- Pipeline registers for DSP M register usage
+    signal a_reg : std_logic_vector(11 downto 0);
+    signal b_reg : std_logic_vector(11 downto 0);
+    signal mult_result : std_logic_vector(23 downto 0);
+
 begin
-    process(a, b)
-        variable mul_ab : integer;
+    -- Register inputs for DSP M register inference
+    process(clk)
     begin
-        mul_ab := to_integer(unsigned(a)) * to_integer(unsigned(b));
-        result <= std_logic_vector(to_unsigned(mul_ab, 24));
+        if rising_edge(clk) then
+            -- Input registers
+            a_reg <= a;
+            b_reg <= b;
+            -- M register will be inferred here
+            mult_result <= std_logic_vector(unsigned(a_reg) * unsigned(b_reg));
+        end if;
     end process;
+    
+    -- Output assignment
+    result <= mult_result;
+
 end architecture rtl;
