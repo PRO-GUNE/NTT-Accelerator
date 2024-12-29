@@ -53,18 +53,24 @@ architecture Behavioral of BUTTERFLY_UNIT is
     -- modular addition
     component MOD_ADD
         port (
-            a : in std_logic_vector(11 downto 0);
-            b : in std_logic_vector(11 downto 0);
-            sum : out std_logic_vector(11 downto 0)
+            clk    : in  std_logic;
+            reset  : in  std_logic;
+            enable : in  std_logic;
+            a      : in  std_logic_vector(11 downto 0);
+            b      : in  std_logic_vector(11 downto 0);
+            sum    : out std_logic_vector(11 downto 0)
         );
     end component MOD_ADD;
 
     -- modular addition
     component MOD_SUB
         port (
-            a : in std_logic_vector(11 downto 0);
-            b : in std_logic_vector(11 downto 0);
-            diff : out std_logic_vector(11 downto 0)
+            clk    : in  std_logic;
+            reset  : in  std_logic;
+            enable : in  std_logic;
+            a      : in  std_logic_vector(11 downto 0);
+            b      : in  std_logic_vector(11 downto 0);
+            diff   : out std_logic_vector(11 downto 0)
         );
     end component MOD_SUB;
 
@@ -215,6 +221,9 @@ begin
 
     -- mod sub
     mod_sub_unit: MOD_SUB port map (
+            clk => clk,
+            reset => reset,
+            enable => enable,
             a => mux_u1_out,
             b => mux_v1_out,
             diff => mod_sub_out
@@ -235,6 +244,9 @@ begin
 
     -- mod add
     mod_add_unit: MOD_ADD port map (
+            clk => clk,
+            reset => reset,
+            enable => enable,
             a => reg_u3_out,
             b => mux_vu1_out,
             sum => mod_add_out

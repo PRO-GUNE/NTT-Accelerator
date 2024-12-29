@@ -4,9 +4,12 @@ use ieee.numeric_std.all;
 
 entity MOD_SUB is
     port (
-        a : in std_logic_vector(11 downto 0);
-        b : in std_logic_vector(11 downto 0);
-        diff : out std_logic_vector(11 downto 0)
+        clk    : in  std_logic;
+        reset  : in  std_logic;
+        enable : in  std_logic;
+        a      : in  std_logic_vector(11 downto 0);
+        b      : in  std_logic_vector(11 downto 0);
+        diff   : out std_logic_vector(11 downto 0)
     );
 end entity MOD_SUB;
 
@@ -16,34 +19,52 @@ architecture behavioral of MOD_SUB is
         
     -- Attribute to guide DSP inference
     attribute use_dsp : string;
-    attribute use_dsp of Behavioral : architecture is "yes";
-
-    -- DSP pattern: (A * 1) + B for initial addition
-    signal a_extended : unsigned(17 downto 0);  -- DSP B input width
-    signal b_extended : unsigned(47 downto 0);  -- DSP C input width
-    signal mult_one   : unsigned(17 downto 0);  -- Constant 1
-    signal temp_diff   : unsigned(47 downto 0);  -- DSP output width
-
-    -- DSP pattern: (Result * 1) - Modulus for correction
+    attribute use_dsp of behavioral : architecture is "yes";
+    
+    -- Extended signal registers
+    signal a_extended : unsigned(17 downto 0);
+    signal b_extended : unsigned(47 downto 0);
+    signal mult_one : unsigned(17 downto 0);
     signal mod_extended : unsigned(47 downto 0);
-    signal corrected_diff : unsigned(47 downto 0);
+    
+    -- DSP output registers
+    signal temp_diff_reg : unsigned(47 downto 0);
+    signal corrected_diff_reg : unsigned(47 downto 0);
 
 begin
-    -- Extend inputs for DSP alignment
-    a_extended <= resize(unsigned(a), 18);
-    b_extended <= resize(unsigned(b), 48);
+    -- Pipeline registers process
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+
+                temp_diff_reg <= (others => '0');
+                corrected_diff_reg <= (others => '0');
+
+            elsif enable = '1' then
+
+                -- Stage 2: Extended registers
+                a_extended <= resize(unsigned(a), 18);
+                b_extended <= resize(unsigned(b), 48);
+                
+                -- Stage 3: DSP operation registers
+                temp_diff_reg <= (a_extended * mult_one) - b_extended;
+
+                -- Stage 4: Final result register with comparison
+                if a < b then
+                    corrected_diff_reg <= temp_diff_reg + mod_extended;
+                else
+                    corrected_diff_reg <= temp_diff_reg;
+                end if;
+
+            end if;
+        end if;
+    end process;
+
+    -- Constants and static signals
     mult_one <= "000000" & x"001";
     mod_extended <= resize(MODULUS, 48);
 
-    -- First DSP operation: A + B
-    -- Using multiplication by 1 to force DSP inference
-    temp_diff <= (a_extended * mult_one) - b_extended;
-
-    -- Second DSP operation: Conditional subtraction of modulus
-    -- Also using multiplication by 1 pattern
-    corrected_diff <= temp_diff + mod_extended when a < b else
-                    temp_diff;
-
     -- Output assignment
-    diff <= std_logic_vector(corrected_diff(11 downto 0));
+    diff <= std_logic_vector(corrected_diff_reg(11 downto 0));
 end architecture behavioral;

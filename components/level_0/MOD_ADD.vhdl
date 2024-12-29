@@ -20,14 +20,10 @@ architecture behavioral of MOD_ADD is
     -- Attribute to guide DSP inference
     attribute use_dsp : string;
     attribute use_dsp of behavioral : architecture is "yes";
-    
-    -- Pipeline registers for inputs
-    signal a_reg1, a_reg2 : std_logic_vector(11 downto 0);
-    signal b_reg1, b_reg2 : std_logic_vector(11 downto 0);
-    
+
     -- Extended signal registers
-    signal a_extended, a_extended_reg : unsigned(17 downto 0);
-    signal b_extended, b_extended_reg : unsigned(47 downto 0);
+    signal a_extended : unsigned(17 downto 0);
+    signal b_extended : unsigned(47 downto 0);
     signal mult_one : unsigned(17 downto 0);
     signal mod_extended : unsigned(47 downto 0);
     
@@ -44,29 +40,18 @@ begin
     begin
         if rising_edge(clk) then
             if reset = '1' then
-                -- Reset all registers
-                a_reg1 <= (others => '0');
-                a_reg2 <= (others => '0');
-                b_reg1 <= (others => '0');
-                b_reg2 <= (others => '0');
-                a_extended_reg <= (others => '0');
-                b_extended_reg <= (others => '0');
+
                 temp_sum_reg <= (others => '0');
                 corrected_sum_reg <= (others => '0');
                 comp_reg <= '0';
+
             elsif enable = '1' then
-                -- Stage 1: Input registers
-                a_reg1 <= a;
-                b_reg1 <= b;
-                
-                -- Stage 2: Extended registers
-                a_reg2 <= a_reg1;
-                b_reg2 <= b_reg1;
-                a_extended_reg <= resize(unsigned(a_reg1), 18);
-                b_extended_reg <= resize(unsigned(b_reg1), 48);
+
+                a_extended <= resize(unsigned(a), 18);
+                b_extended <= resize(unsigned(b), 48);
                 
                 -- Stage 3: DSP operation registers
-                temp_sum_reg <= (a_extended_reg * mult_one) + b_extended_reg;
+                temp_sum_reg <= (a_extended * mult_one) + b_extended;
                 
                 -- Stage 4: Final result register with comparison
                 if temp_sum_reg >= mod_extended then
@@ -74,6 +59,7 @@ begin
                 else
                     corrected_sum_reg <= temp_sum_reg;
                 end if;
+                
             end if;
         end if;
     end process;
