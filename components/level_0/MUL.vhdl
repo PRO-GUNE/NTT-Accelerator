@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 entity MUL is
     port (
-        clk     : in  std_logic;
-        enable  : in  std_logic;                     
+        clk     : in  std_logic;                      -- Added clock for M register
+        enable  : in  std_logic;
         a       : in  std_logic_vector(11 downto 0);
         b       : in  std_logic_vector(11 downto 0);
         result  : out std_logic_vector(23 downto 0)
@@ -17,29 +17,27 @@ architecture rtl of MUL is
     attribute use_dsp : string;
     attribute use_dsp of rtl : architecture is "yes";
     
-    signal P_out : std_logic_vector(25 downto 0);
-    signal A_in, B_in : std_logic_vector(12 downto 0);
-
-    COMPONENT dsp_macro_0
-       PORT (
-            CLK : IN STD_LOGIC;
-            A : IN STD_LOGIC_VECTOR(12 DOWNTO 0);
-            B : IN STD_LOGIC_VECTOR(12 DOWNTO 0);
-            P : OUT STD_LOGIC_VECTOR(25 DOWNTO 0) 
-        );
-    END COMPONENT;
+    -- Pipeline registers for DSP M register usage
+    signal a_reg : std_logic_vector(11 downto 0);
+    signal b_reg : std_logic_vector(11 downto 0);
+    signal mult_result : std_logic_vector(23 downto 0);
 
 begin
-    dsp_mul_unit : dsp_macro_0
-    port map(
-        CLK => clk,
-        A => A_in,
-        B => B_in,
-        P => P_out
-    );
-
-    result <= P_out(23 downto 0);
-    A_in <= '0' & a;
-    B_in <= '0' & b;
+    -- Register inputs for DSP M register inference
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if enable = '1' then
+                -- Input registers
+                a_reg <= a;
+                b_reg <= b;
+                -- M register will be inferred here
+                mult_result <= std_logic_vector(unsigned(a_reg) * unsigned(b_reg));
+            end if;
+        end if;
+    end process;
     
+    -- Output assignment
+    result <= mult_result;
+
 end architecture rtl;

@@ -29,6 +29,7 @@ architecture behavioral of MOD_SUB is
     
     -- DSP output registers
     signal temp_diff_reg : unsigned(47 downto 0);
+    signal signed_diff : signed(47 downto 0);
     signal corrected_diff_reg : unsigned(47 downto 0);
 
 begin
@@ -51,7 +52,7 @@ begin
                 temp_diff_reg <= (a_extended * mult_one) - b_extended;
 
                 -- Stage 4: Final result register with comparison
-                if a < b then
+                if signed_diff < 0 then
                     corrected_diff_reg <= temp_diff_reg + mod_extended;
                 else
                     corrected_diff_reg <= temp_diff_reg;
@@ -64,6 +65,7 @@ begin
     -- Constants and static signals
     mult_one <= "000000" & x"001";
     mod_extended <= resize(MODULUS, 48);
+    signed_diff <= signed(temp_diff_reg);
 
     -- Output assignment
     diff <= std_logic_vector(corrected_diff_reg(11 downto 0));

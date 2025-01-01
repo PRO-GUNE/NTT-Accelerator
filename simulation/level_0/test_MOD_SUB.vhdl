@@ -43,46 +43,47 @@ begin
     process begin
     -- reset
     reset <= '1';
-    wait for 40 ns;
+    wait for 10 ns;
     reset <= '0';
-    wait for 40 ns;
+    wait for 10 ns;
 
     -- Test case 1: a = 0, b = 0
     a <= "000000000000";
     b <= "000000000000";
-    wait for 40 ns;
-    assert diff = "000000000000" report "Test case 1 failed" severity error;
-
+    wait for 10 ns;
     -- Test case 2: a = 100, b = 50 -> 50
     a <= "000001100100";
     b <= "000000110010";
-    wait for 40 ns;
-    assert diff = "000000110010" report "Test case 2 failed" severity error;
-
+    wait for 10 ns;
     -- Test case 3: a = 500, b = 1000 -> 2829
     a <= "000111110100";
     b <= "001111101000";
-    wait for 40 ns;
-    assert diff = "101100001101" report "Test case 3 failed" severity error;
-
+    wait for 10 ns;
+    assert diff = "000000000000" report "Test case 1 failed" severity error;
     -- Test case 4: a = 3328, b = 0 -> 3328
     a <= "110100000000";
     b <= "000000000000";
-    wait for 40 ns;
-    assert diff = "110100000000" report "Test case 4 failed" severity error;
-
+    wait for 10 ns;
+    assert diff = "000000110010" report "Test case 2 failed" severity error;
+    
     -- Test case 5: a = 0, b = 3328 -> 1
     a <= "000000000000";
     b <= "110100000000";
-    wait for 40 ns;
-    assert diff = "000000000001" report "Test case 5 failed" severity error;
+    wait for 10 ns;
+    assert diff = "101100001101" report "Test case 3 failed" severity error;
     
     -- Test case 6: a = 3276, b = 705 -> 2571
     a <= "110011001100";
     b <= "001011000001";
-    wait for 40 ns;
+    wait for 10 ns;
+    assert diff = "110100000000" report "Test case 4 failed" severity error;
+    
+    wait for 10 ns;
+    assert diff = "000000000001" report "Test case 5 failed" severity error;
+    
+    wait for 10 ns;
     assert diff = "101000001011" report "Test case 6 failed" severity error;
-
+        
     -- End simulation
     wait;
     end process;
