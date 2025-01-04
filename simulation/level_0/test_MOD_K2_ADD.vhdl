@@ -34,6 +34,12 @@ begin
     end process;
 
     process begin
+    -- reset
+    reset <= '1';
+    wait for 10 ns;
+    reset <= '0';
+    wait for 10 ns;
+
     -- Test 1: All zeros
     c_in <= "000000000000000000000000";
     wait for 10 ns;
