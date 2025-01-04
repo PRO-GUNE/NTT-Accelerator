@@ -11,14 +11,13 @@ architecture testbench of test_MOD_SUB is
         clk    : in  std_logic;
         reset  : in  std_logic;
         enable : in  std_logic;
-        mode   : in  std_logic;
         a      : in  std_logic_vector(11 downto 0);
         b      : in  std_logic_vector(11 downto 0);
         diff   : out std_logic_vector(11 downto 0)
     );
     end component MOD_SUB;
     
-    signal clk, reset, mode : std_logic := '0';
+    signal clk, reset : std_logic := '0';
     signal enable : std_logic := '1';
 
     signal a, b : std_logic_vector(11 downto 0) := (others => '0');
@@ -30,7 +29,6 @@ begin
             clk => clk,
             reset => reset,
             enable => enable,
-            mode => mode,
             a => a,
             b => b,
             diff => diff

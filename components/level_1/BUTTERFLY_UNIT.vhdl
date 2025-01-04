@@ -68,7 +68,6 @@ architecture Behavioral of BUTTERFLY_UNIT is
             clk    : in  std_logic;
             reset  : in  std_logic;
             enable : in  std_logic;
-            mode   : in  std_logic;
             a      : in  std_logic_vector(11 downto 0);
             b      : in  std_logic_vector(11 downto 0);
             diff   : out std_logic_vector(11 downto 0)
@@ -219,7 +218,7 @@ begin
 
     mux_2_vsub: MUX_2 port map (
             sel => mode(0),
-            in0 => reg_v3_out,
+            in0 => v_in,
             in1 => mod_sub_out,
             c_out => mux_vsub_out
         );
@@ -229,7 +228,6 @@ begin
             clk => clk,
             reset => reset,
             enable => enable,
-            mode => mode(0),
             a => mux_u1_out,
             b => mux_v1_out,
             diff => mod_sub_out
