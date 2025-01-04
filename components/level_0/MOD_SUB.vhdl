@@ -7,6 +7,7 @@ entity MOD_SUB is
         clk    : in  std_logic;
         reset  : in  std_logic;
         enable : in  std_logic;
+        mode   : in  std_logic;
         a      : in  std_logic_vector(11 downto 0);
         b      : in  std_logic_vector(11 downto 0);
         diff   : out std_logic_vector(11 downto 0)
@@ -50,6 +51,9 @@ begin
                 
                 -- Stage 3: DSP operation registers
                 temp_diff_reg <= (a_extended * mult_one) - b_extended;
+
+                -- Integrate x 1/2
+                temp_diff_reg <= shift_right(temp_diff_reg, 1) when mode='1' else temp_diff_reg;
 
                 -- Stage 4: Final result register with comparison
                 if signed_diff < 0 then
